@@ -1,0 +1,51 @@
+<div class="flex items-center justify-center h-[100dvh]">
+  <div class="max-w-xl w-full mx-auto px-4 py-4">
+    <h2 class="text-3xl font-bold mb-2">Iniciar session</h2>
+    <p class="text-sm mb-8">Bienvenido a trackbook</p>
+
+    <form class="">
+      <email-input
+        [emailControl]="loginForm.controls.email"
+        matFormFielClass="w-full rounded-full"
+      />
+
+      <!-- <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Contrasena</mat-label>
+        <input matInput type="password" required />
+      </mat-form-field> -->
+      <password-input
+      [passwordControl]="loginForm.controls.password"
+      matFormFielClass="w-full rounded-full mt-2"
+      labelInputPass="Contraseña"
+      />
+
+      <div class="flex items-center justify-between text-sm mb-14">
+        <mat-checkbox color="primary">Recordarme</mat-checkbox>
+        <button mat-button [routerLink]="['/auth/reset-pass']" type="button">
+          olvide mi contrasena
+        </button>
+      </div>
+
+      <button mat-flat-button color="primary" class="w-full rounded-full">
+        <mat-icon>send</mat-icon>
+        iniciar session
+      </button>
+
+      <div class="flex items-center mt-2">
+        <hr class="flex-grow border-gray-300" />
+        <span class="mx-2 text-sm">o</span>
+        <hr class="flex-grow border-gray-300" />
+      </div>
+
+      <button
+        mat-stroked-button
+        class="w-full mt-2"
+        routerLink="/auth/register"
+        type="button"
+      >
+        <mat-icon>person</mat-icon>
+        Crear cuenta
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+<div class="flex items-center justify-center h-[100dvh]">
+  <div class="px-4 py-4 max-w-md w-full mx-auto">
+    <h2 class="text-2xl font-bold mb-2">Restablecer contraseña</h2>
+    <p class="text-sm mb-6">Ingresa el código de 4 dígitos que enviamos a tu correo</p>
+
+    <form>
+    <email-input
+        [emailControl]="resetPassForm.controls.email"
+        matFormFielClass="w-full rounded-full"
+      />
+
+      <div class="flex justify-end mb-4">
+        <button mat-button type="button">Reenviar código</button>
+      </div>
+
+      <div class="flex justify-between gap-x-2 mb-4">
+        <input type="text" maxlength="1" class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary" />
+        <input type="text" maxlength="1" class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary" />
+        <input type="text" maxlength="1" class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary" />
+        <input type="text" maxlength="1" class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary" />
+      </div>
+
+      <button mat-flat-button color="primary" class="w-full rounded-full mb-4" type="submit">
+        <mat-icon>check</mat-icon>
+        Verificar código
+      </button>
+
+      <button mat-button color="primary" class="w-full rounded-full" type="button" [routerLink]="['/auth/login']">
+        <mat-icon>arrow_back</mat-icon>
+        Volver a iniciar sesión
+      </button>
+
+    </form>
+  </div>
+</div>

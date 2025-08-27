@@ -1,0 +1,9 @@
+{
+  "tailwindCSS.includeLanguages": {
+    "scss": "html"
+  },
+  "tailwindCSS.experimental.classRegex": [],
+  "tailwindCSS.files.exclude": [
+    "**/custom-theme.scss"
+  ]
+}
