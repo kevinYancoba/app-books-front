@@ -1,4 +1,3 @@
-import { RegisterComponent } from './features/register/register.component';
 import { Routes } from "@angular/router";
 
 const authRoutes: Routes = [

@@ -1,0 +1,16 @@
+<mat-toolbar class="fixed bottom-0 left-0 w-full flex justify-around h-20">
+
+  @for (item of navItems(); track $index) {
+    <div
+      class="flex flex-col items-center justify-center"
+      routerLink="{{ item.route }}"
+      routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <button mat-icon-button>
+        <mat-icon>{{ item.icon }}</mat-icon>
+      </button>
+      <span class="text-sm mt-1">{{ item.label }}</span>
+    </div>
+  }
+</mat-toolbar>
