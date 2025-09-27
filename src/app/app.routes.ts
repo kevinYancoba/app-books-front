@@ -3,6 +3,7 @@ import authRoutes from './auth/auth.routes';
 import { LoginLayoutComponent } from './core/layout/login-layout/login-layout.component';
 import { HomeLayoutComponent } from './core/layout/home-layout/home-layout.component';
 import planRoutes from './features/plans/plans.routes';
+import planDetailRoutes from './features/plan-detail/plan-detail.routes';
 
 export const routes: Routes = [
   {
@@ -13,7 +14,16 @@ export const routes: Routes = [
   {
     path: 'home',
     component : HomeLayoutComponent,
-    children : planRoutes
+    children :[
+      {
+        path: 'plans',
+        children: planRoutes
+      },
+      {
+        path: 'plan-detail',
+        children: planDetailRoutes
+      }
+    ]
   },
   {
     path : "**",

@@ -4,19 +4,18 @@
 @use '@angular/material' as mat;
 @use './themes/theme-color.scss' as theme-color;
 
-:root {
+.bottom-toolbar {
   @include mat.toolbar-overrides((
     container-background-color: var(--mat-sys-primary),
     container-text-color: var(--mat-sys-on-secondary),
   ));
-}
 
-.mat-toolbar {
   .mat-icon,
   .mat-mdc-icon-button {
-    color: var(--mat-sys-on-secondary)
+    color: var(--mat-sys-on-secondary);
   }
 }
+
 
 html {
    color-scheme: ligth ;
