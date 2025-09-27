@@ -3,16 +3,23 @@
     <h2 class="text-3xl font-bold mb-2">Iniciar session</h2>
     <p class="text-sm mb-8">Bienvenido a trackbook</p>
 
-    <form class="">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Mostrar error si existe -->
+      @if (error()) {
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {{ error() }}
+        </div>
+      }
+
       <email-input
         [emailControl]="loginForm.controls.email"
         matFormFielClass="w-full rounded-full"
       />
 
       <password-input
-      [passwordControl]="loginForm.controls.password"
-      matFormFielClass="w-full rounded-full mt-2"
-      labelInputPass="Contraseña"
+        [passwordControl]="loginForm.controls.password"
+        matFormFielClass="w-full rounded-full mt-2"
+        labelInputPass="Contraseña"
       />
 
       <div class="flex items-center justify-between text-sm mb-14">
@@ -22,9 +29,24 @@
         </button>
       </div>
 
-      <button mat-flat-button color="primary" class="w-full rounded-full">
-        <mat-icon>send</mat-icon>
-        iniciar session
+      <button
+        mat-flat-button
+        color="primary"
+        class="w-full rounded-full"
+        type="submit"
+        [disabled]="isLoading() || loginForm.invalid"
+      >
+        @if (isLoading()) {
+          <ng-container>
+            <mat-icon>send</mat-icon>
+            Iniciando sesión...
+          </ng-container>
+        } @else {
+          <ng-container>
+            <mat-icon>send</mat-icon>
+            iniciar session
+          </ng-container>
+        }
       </button>
 
       <div class="flex items-center mt-2">

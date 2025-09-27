@@ -3,16 +3,29 @@
     <h2 class="font-bold text-3xl mb-2">Crear cuenta</h2>
     <p class="text-base mb-15">aca inicia la contruccion de un nuevo habito</p>
 
-    <form action="">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Mostrar error si existe -->
+      @if (error()) {
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {{ error() }}
+        </div>
+      }
+
       <div class="flex flex-col md:flex-row justify-between gap-x-4">
         <mat-form-field appearance="outline" class="w-full md:w-1/2">
           <mat-label>Nombres</mat-label>
-          <input matInput type="text" class="" />
+          <input matInput type="text" formControlName="name" />
+          @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+            <mat-error>El nombre es requerido</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full md:w-1/2">
           <mat-label>Apellidos</mat-label>
-          <input matInput type="text" class="" />
+          <input matInput type="text" formControlName="lastName" />
+          @if (registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched) {
+            <mat-error>El apellido es requerido</mat-error>
+          }
         </mat-form-field>
       </div>
 
@@ -33,11 +46,31 @@
           matFormFielClass="w-full"
           labelInputPass="Confirmar contraseña"
         />
+
+        @if (passwordMismatch) {
+          <div class="text-red-500 text-sm mt-1">
+            Las contraseñas no coinciden
+          </div>
+        }
       </div>
 
-      <button mat-flat-button class="w-full mt-12">
-        <mat-icon>send</mat-icon>
-        enviar
+      <button
+        mat-flat-button
+        class="w-full mt-12"
+        type="submit"
+        [disabled]="isLoading() || registerForm.invalid"
+      >
+        @if (isLoading()) {
+          <ng-container>
+            <mat-icon>hourglass_empty</mat-icon>
+            Registrando...
+          </ng-container>
+        } @else {
+          <ng-container>
+            <mat-icon>send</mat-icon>
+            enviar
+          </ng-container>
+        }
       </button>
 
       <button

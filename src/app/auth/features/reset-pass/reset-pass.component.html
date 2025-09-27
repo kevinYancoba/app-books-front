@@ -1,35 +1,166 @@
 <div class="flex items-center justify-center h-[100dvh]">
   <div class="px-4 py-4 max-w-xl w-full mx-auto">
-    <h2 class="text-2xl font-bold mb-2">Restablecer contraseña</h2>
-    <p class="text-sm mb-6">Ingresa el código de 4 dígitos que enviamos a tu correo</p>
 
-    <form>
-    <email-input
-        [emailControl]="resetPassForm.controls.email"
-        matFormFielClass="w-full rounded-full"
-      />
-
-      <div class="flex justify-end mb-4">
-        <button mat-button type="button">Reenviar código</button>
+    <!-- Mostrar error si existe -->
+    @if (error()) {
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        {{ error() }}
       </div>
+    }
 
-      <div class="flex justify-between gap-x-2 mb-4">
-        <input type="text" maxlength="1" class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary" />
-        <input type="text" maxlength="1" class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary" />
-        <input type="text" maxlength="1" class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary" />
-        <input type="text" maxlength="1" class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary" />
-      </div>
+    <!-- Paso 1: Solicitar código por email -->
+    @if (currentStep() === 'email') {
+      <h2 class="text-2xl font-bold mb-2">Restablecer contraseña</h2>
+      <p class="text-sm mb-6">Ingresa tu email para recibir un código de recuperación</p>
 
-      <button mat-flat-button color="primary" class="w-full rounded-full mb-4" type="submit">
-        <mat-icon>check</mat-icon>
-        Verificar código
-      </button>
+      <form [formGroup]="emailForm" (ngSubmit)="requestCode()">
+        <email-input
+          [emailControl]="emailForm.controls.email"
+          matFormFielClass="w-full rounded-full"
+        />
 
-      <button mat-button color="primary" class="w-full rounded-full" type="button" [routerLink]="['/auth/login']">
-        <mat-icon>arrow_back</mat-icon>
-        Volver a iniciar sesión
-      </button>
+        <button
+          mat-flat-button
+          color="primary"
+          class="w-full rounded-full mb-4"
+          type="submit"
+          [disabled]="isLoading() || emailForm.invalid"
+        >
+          @if (isLoading()) {
+            <ng-container>
+              <mat-icon>hourglass_empty</mat-icon>
+              Enviando código...
+            </ng-container>
+          } @else {
+            <ng-container>
+              <mat-icon>send</mat-icon>
+              Enviar código
+            </ng-container>
+          }
+        </button>
 
-    </form>
+        <button mat-button color="primary" class="w-full rounded-full" type="button" [routerLink]="['/auth']">
+          <mat-icon>arrow_back</mat-icon>
+          Volver a iniciar sesión
+        </button>
+      </form>
+    }
+
+    <!-- Paso 2: Verificar código -->
+    @if (currentStep() === 'code') {
+      <h2 class="text-2xl font-bold mb-2">Verificar código</h2>
+      <p class="text-sm mb-6">Ingresa el código de 4 dígitos que enviamos a {{ userEmail() }}</p>
+
+      <form [formGroup]="codeForm" (ngSubmit)="verifyCode()">
+        <div class="flex justify-between gap-x-2 mb-4">
+          <input
+            type="text"
+            maxlength="1"
+            formControlName="digit1"
+            #digit1
+            (input)="onDigitInput($event, digit2)"
+            class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <input
+            type="text"
+            maxlength="1"
+            formControlName="digit2"
+            #digit2
+            (input)="onDigitInput($event, digit3)"
+            class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <input
+            type="text"
+            maxlength="1"
+            formControlName="digit3"
+            #digit3
+            (input)="onDigitInput($event, digit4)"
+            class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <input
+            type="text"
+            maxlength="1"
+            formControlName="digit4"
+            #digit4
+            (input)="onDigitInput($event)"
+            class="w-1/4 text-center border rounded-md py-2 text-xl focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <div class="flex justify-end mb-4">
+          <button mat-button type="button" (click)="resendCode()" [disabled]="isLoading()">
+            Reenviar código
+          </button>
+        </div>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="w-full rounded-full mb-4"
+          type="submit"
+          [disabled]="isLoading() || codeForm.invalid"
+        >
+          <mat-icon>check</mat-icon>
+          Verificar código
+        </button>
+
+        <button mat-button color="primary" class="w-full rounded-full" type="button" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Cambiar email
+        </button>
+      </form>
+    }
+
+    <!-- Paso 3: Nueva contraseña -->
+    @if (currentStep() === 'password') {
+      <h2 class="text-2xl font-bold mb-2">Nueva contraseña</h2>
+      <p class="text-sm mb-6">Ingresa tu nueva contraseña</p>
+
+      <form [formGroup]="passwordForm" (ngSubmit)="updatePassword()">
+        <password-input
+          [passwordControl]="passwordForm.controls.password"
+          matFormFielClass="w-full mb-4"
+          labelInputPass="Nueva contraseña"
+        />
+
+        <password-input
+          [passwordControl]="passwordForm.controls.confirmPassword"
+          matFormFielClass="w-full mb-4"
+          labelInputPass="Confirmar contraseña"
+        />
+
+        @if (passwordMismatch) {
+          <div class="text-red-500 text-sm mb-4">
+            Las contraseñas no coinciden
+          </div>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="w-full rounded-full mb-4"
+          type="submit"
+          [disabled]="isLoading() || passwordForm.invalid || passwordMismatch"
+        >
+          @if (isLoading()) {
+            <ng-container>
+              <mat-icon>hourglass_empty</mat-icon>
+              Actualizando...
+            </ng-container>
+          } @else {
+            <ng-container>
+              <mat-icon>save</mat-icon>
+              Actualizar contraseña
+            </ng-container>
+          }
+        </button>
+
+        <button mat-button color="primary" class="w-full rounded-full" type="button" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Volver al código
+        </button>
+      </form>
+    }
+
   </div>
 </div>
