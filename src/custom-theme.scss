@@ -1,6 +1,5 @@
 
 // Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
 @use './themes/theme-color.scss' as theme-color;
 
@@ -16,13 +15,25 @@
   }
 }
 
-
 html {
-   color-scheme: ligth ;
+  color-scheme: light;
   @include mat.theme((
     color: (
-      primary : theme-color.$primary-palette,
-      tertiary : theme-color.$tertiary-palette
+      primary: theme-color.$primary-palette,
+      tertiary: theme-color.$tertiary-palette
+    ),
+    typography: Roboto,
+    density: 0
+  ));
+}
+
+// Dark theme
+html[data-theme="dark"] {
+  color-scheme: dark;
+  @include mat.theme((
+    color: (
+      primary: theme-color.$primary-palette,
+      tertiary: theme-color.$tertiary-palette
     ),
     typography: Roboto,
     density: 0

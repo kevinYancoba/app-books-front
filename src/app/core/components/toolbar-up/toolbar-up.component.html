@@ -1,13 +1,30 @@
 <mat-toolbar>
   <div class="flex justify-between items-center w-full">
-    <span class="text-3xl font-medium"
-      ><mat-icon>local_library</mat-icon> Track Book</span
-    >
-    <button
-      mat-icon-button
-      aria-label="Example icon button with a vertical three dot icon"
-    >
-      <mat-icon>brightness_4</mat-icon>
-    </button>
+    <span class="text-3xl font-medium">
+      <mat-icon>local_library</mat-icon> Track Book
+    </span>
+    <div class="flex items-center gap-2">
+      <!-- Theme toggle button -->
+      <button
+        mat-icon-button
+        (click)="toggleTheme()"
+        [attr.aria-label]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
+        type="button"
+      >
+        <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+
+      <!-- Logout button - only show if authenticated -->
+      @if (isAuthenticated()) {
+        <button
+          mat-icon-button
+          (click)="logout()"
+          aria-label="Logout"
+          type="button"
+        >
+          <mat-icon>logout</mat-icon>
+        </button>
+      }
+    </div>
   </div>
 </mat-toolbar>
