@@ -6,6 +6,13 @@ export const API_CONFIG = {
       register: '/auth/register',
       codeReset: '/auth/codeReset',
       updatePassword: '/auth/updatePassword'
+    },
+    plan: {
+      createPlan: '/plan/createPlan',
+      getUserPlans: '/plan/user',
+      getPlan: '/plan',
+      updatePlan: '/plan',
+      deletePlan: '/plan'
     }
   }
 };

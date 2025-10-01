@@ -1,64 +1,145 @@
+<div class="plan-stepper">
 <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Horarios del plan</ng-template>
+
       <mat-form-field appearance="outline" class="w-full mt-4">
         <mat-label>Nivel de lectura</mat-label>
-        <mat-select>
+        <mat-select formControlName="nivelLectura">
           @for (option of nivelLectura(); track option) {
           <mat-option [value]="option.value">{{ option.viewValue }}</mat-option>
           }
         </mat-select>
+        @if (firstFormGroup.get('nivelLectura')?.invalid && firstFormGroup.get('nivelLectura')?.touched) {
+        <mat-error>Selecciona tu nivel de lectura</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Horario de lectura</mat-label>
-        <input matInput [matTimepicker]="customPicker" />
+        <input matInput [matTimepicker]="customPicker" formControlName="horarioLectura" />
         <mat-timepicker-toggle matIconSuffix [for]="customPicker" />
         <mat-timepicker [options]="customOptions" #customPicker />
+        @if (firstFormGroup.get('horarioLectura')?.invalid && firstFormGroup.get('horarioLectura')?.touched) {
+        <mat-error>Selecciona tu horario de lectura</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Minutos disponibles</mat-label>
-        <input matInput type="time" class="" />
+        <mat-label>Minutos disponibles por día</mat-label>
+        <input matInput type="number" formControlName="tiempoLecturaDiario" min="1" max="480" />
         <mat-icon matSuffix>timelapse</mat-icon>
+        @if (firstFormGroup.get('tiempoLecturaDiario')?.invalid && firstFormGroup.get('tiempoLecturaDiario')?.touched) {
+        <mat-error>Ingresa un tiempo válido (1-480 minutos)</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Fecha fin</mat-label>
-        <input matInput [matDatepicker]="picker" />
-        <mat-hint>MM/DD/YYYY</mat-hint>
-        <mat-datepicker-toggle
-          matIconSuffix
-          [for]="picker"
-        ></mat-datepicker-toggle>
+        <mat-label>Fecha fin del plan</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="fechaFin" />
+        <mat-hint>Selecciona cuando quieres terminar de leer</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+        @if (firstFormGroup.get('fechaFin')?.invalid && firstFormGroup.get('fechaFin')?.touched) {
+        <mat-error>Selecciona la fecha fin del plan</mat-error>
+        }
       </mat-form-field>
+
+      <div class="w-full mb-4 mt-6">
+        <mat-checkbox formControlName="finesSemana">
+          Incluir fines de semana en el plan de lectura
+        </mat-checkbox>
+      </div>
+
       <div class="flex justify-end mt-4">
-        <button mat-button matStepperNext>Next</button>
+        <button mat-button matStepperNext [disabled]="firstFormGroup.invalid">
+          Siguiente
+        </button>
       </div>
     </form>
   </mat-step>
-  <mat-step>
-    <ng-template matStepLabel>Detalles del Libro</ng-template>
-    <mat-form-field class="w-full mt-2" appearance="outline">
-      <mat-label>Titulo del libro</mat-label>
-      <input matInput />
-      <mat-icon matSuffix>book</mat-icon>
-    </mat-form-field>
-    <mat-form-field class="w-full" appearance="outline">
-      <mat-label>Nombre del autor</mat-label>
-      <input matInput />
-      <mat-icon matSuffix>person_4</mat-icon>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Carga la imagen del índice</mat-label>
-      <input type="file" accept="image/*" capture/>
-      <mat-icon matSuffix>image</mat-icon>
-    </mat-form-field>
-    <div>
-      <button mat-button matStepperPrevious>Back</button>
-      <button mat-button (click)="stepper.reset()">Reset</button>
-    </div>
+  <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Detalles del Libro</ng-template>
+
+      <mat-form-field class="w-full mt-2" appearance="outline">
+        <mat-label>Título del libro</mat-label>
+        <input matInput formControlName="tituloLibro" />
+        <mat-icon matSuffix>book</mat-icon>
+        @if (secondFormGroup.get('tituloLibro')?.invalid && secondFormGroup.get('tituloLibro')?.touched) {
+        <mat-error>Ingresa el título del libro (mínimo 2 caracteres)</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field class="w-full" appearance="outline">
+        <mat-label>Nombre del autor</mat-label>
+        <input matInput formControlName="autorLibro" />
+        <mat-icon matSuffix>person_4</mat-icon>
+        @if (secondFormGroup.get('autorLibro')?.invalid && secondFormGroup.get('autorLibro')?.touched) {
+        <mat-error>Ingresa el nombre del autor (mínimo 2 caracteres)</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Campo para cargar imagen del índice -->
+      <div class="w-full mb-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Imagen del índice del libro</mat-label>
+          <input matInput readonly [value]="getSelectedFileName()"
+                 placeholder="Selecciona una imagen del índice" />
+          <button mat-icon-button matSuffix (click)="openFileSelector()" type="button">
+            <mat-icon>image</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <!-- Mostrar estado de carga -->
+        @if (isCompressingImage()) {
+        <div class="flex items-center gap-2 mt-2">
+          <mat-spinner diameter="20"></mat-spinner>
+          <span class="text-sm text-gray-600">Procesando imagen...</span>
+        </div>
+        }
+
+        <!-- Mostrar errores de archivo -->
+        @if (fileError()) {
+        <div class="text-red-500 text-sm mt-2">
+          {{ fileError() }}
+        </div>
+        }
+
+        <!-- Mostrar información del archivo seleccionado -->
+        @if (hasSelectedFile() && !isCompressingImage()) {
+        <div class="text-green-600 text-sm mt-2 flex items-center gap-1">
+          <mat-icon class="text-sm">check_circle</mat-icon>
+          Imagen cargada y procesada correctamente
+        </div>
+        }
+
+        <div class="text-xs text-gray-500 mt-1">
+          Formatos soportados: JPEG, PNG, WebP. Tamaño máximo: 10MB
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-6">
+        <button mat-button matStepperPrevious>
+          Anterior
+        </button>
+        <div class="flex gap-2">
+          <button mat-button (click)="stepper.reset()" type="button">
+            Reiniciar
+          </button>
+          <button mat-raised-button color="primary"
+                  (click)="submitForm()"
+                  [disabled]="!isFormValid() || planService.isLoading()"
+                  type="button">
+            @if (planService.isLoading()) {
+            <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+            }
+            Crear Plan
+          </button>
+        </div>
+      </div>
+    </form>
   </mat-step>
 </mat-stepper>
+</div>
