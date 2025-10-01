@@ -8,5 +8,4 @@ export interface User {
 }
 
 export interface UserProfile extends User {
-  // Propiedades adicionales del perfil si las hay
 }

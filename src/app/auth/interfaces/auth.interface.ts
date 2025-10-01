@@ -1,6 +1,5 @@
 import { User } from './user.interface';
 
-// Request interfaces
 export interface LoginRequest {
   email: string;
   password: string;
@@ -29,10 +28,10 @@ export interface CodeResetResponse {
   expiresIn: string;
 }
 
-// Response interfaces
+
 export interface AuthResponse {
   user: User;
-  acces_token: string; // Mantengo el typo del backend para consistencia
+  acces_token: string;
 }
 
 export interface ApiResponse<T> {
@@ -41,7 +40,6 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-// Auth state interface
 export interface AuthState {
   isAuthenticated: boolean;
   user: User | null;

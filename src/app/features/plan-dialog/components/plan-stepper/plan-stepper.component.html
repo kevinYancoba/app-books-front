@@ -1,33 +1,61 @@
 <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
-      <ng-template matStepLabel>Fill out your name</ng-template>
-      <mat-form-field appearance="outline">
-        <mat-label>Name</mat-label>
-        <input matInput="" placeholder="Last name, First name" formControlName="firstCtrl" required>
+      <ng-template matStepLabel>Horarios del plan</ng-template>
+      <mat-form-field appearance="outline" class="w-full mt-4">
+        <mat-label>Nivel de lectura</mat-label>
+        <mat-select>
+          @for (option of nivelLectura(); track option) {
+          <mat-option [value]="option.value">{{ option.viewValue }}</mat-option>
+          }
+        </mat-select>
       </mat-form-field>
-      <div>
-        <button mat-button matStepperNext>Next</button>
-      </div>
-    </form>
-  </mat-step>
-  <mat-step [stepControl]="secondFormGroup">
-    <form [formGroup]="secondFormGroup">
-      <ng-template matStepLabel>Fill out your address</ng-template>
-      <mat-form-field appearance="outline" class="mt-2">
-        <mat-label>Address</mat-label>
-        <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
-               required>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Horario de lectura</mat-label>
+        <input matInput [matTimepicker]="customPicker" />
+        <mat-timepicker-toggle matIconSuffix [for]="customPicker" />
+        <mat-timepicker [options]="customOptions" #customPicker />
       </mat-form-field>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Minutos disponibles</mat-label>
+        <input matInput type="time" class="" />
+        <mat-icon matSuffix>timelapse</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Fecha fin</mat-label>
+        <input matInput [matDatepicker]="picker" />
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <div class="flex justify-end mt-4">
         <button mat-button matStepperNext>Next</button>
       </div>
     </form>
   </mat-step>
   <mat-step>
-    <ng-template matStepLabel>Done</ng-template>
-    <p>You are now done.</p>
+    <ng-template matStepLabel>Detalles del Libro</ng-template>
+    <mat-form-field class="w-full mt-2" appearance="outline">
+      <mat-label>Titulo del libro</mat-label>
+      <input matInput />
+      <mat-icon matSuffix>book</mat-icon>
+    </mat-form-field>
+    <mat-form-field class="w-full" appearance="outline">
+      <mat-label>Nombre del autor</mat-label>
+      <input matInput />
+      <mat-icon matSuffix>person_4</mat-icon>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Carga la imagen del índice</mat-label>
+      <input type="file" accept="image/*" capture/>
+      <mat-icon matSuffix>image</mat-icon>
+    </mat-form-field>
     <div>
       <button mat-button matStepperPrevious>Back</button>
       <button mat-button (click)="stepper.reset()">Reset</button>

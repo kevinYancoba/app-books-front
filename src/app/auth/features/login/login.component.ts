@@ -46,7 +46,6 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private navigationService = inject(NavigationService);
 
-  // Signals para el estado del componente
   isLoading = this.authService.isLoading;
   error = this.authService.error;
 
