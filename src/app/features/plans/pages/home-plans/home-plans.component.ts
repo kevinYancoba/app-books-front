@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlanListComponent } from "../../components/plan-list/plan-list.component";
 import { MainButtonComponent } from "../../components/main-button/main-button.component";
@@ -22,6 +23,7 @@ export class HomePlansComponent implements OnInit {
   private readonly planService = inject(PlanService);
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
 
   // Signals para el estado
   plans = signal<Plan[]>([]);
@@ -73,7 +75,8 @@ export class HomePlansComponent implements OnInit {
    */
   onPlanView(plan: Plan): void {
     console.log('Ver plan:', plan);
-    // TODO: Navegar a la vista detallada del plan
+    // Navegar a la vista detallada del plan
+    this.router.navigate(['/home/plan-detail', plan.id_plan]);
     this.snackBar.open(`Abriendo plan "${plan.libro.titulo}"`, 'Cerrar', {
       duration: 2000,
       panelClass: ['success-snackbar']

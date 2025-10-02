@@ -1,9 +1,9 @@
-<div class="plan-list-container">
+<div class="plan-details-container">
   <!-- Estado de carga -->
   @if (isLoading()) {
-  <div class="flex justify-center items-center p-8">
+  <div class="flex flex-col items-center justify-center p-8">
     <mat-spinner diameter="50"></mat-spinner>
-    <span class="ml-4 text-gray-600">Cargando planes de lectura...</span>
+    <p class="mt-4 text-gray-600">Cargando detalles del plan...</p>
   </div>
   }
 
@@ -11,23 +11,47 @@
   @else if (error()) {
   <div class="flex flex-col items-center justify-center p-8 text-center">
     <mat-icon class="text-red-500 text-6xl mb-4">error_outline</mat-icon>
-    <h3 class="text-lg font-semibold text-gray-700 mb-2">Error al cargar planes</h3>
+    <h3 class="text-lg font-semibold text-gray-700 mb-2">Error al cargar el plan</h3>
     <p class="text-gray-500 mb-4">{{ error() }}</p>
-    <button mat-raised-button color="primary" (click)="refreshPlans()">
+    <button mat-raised-button color="primary" (click)="refreshPlan()">
       Reintentar
     </button>
   </div>
   }
 
-  <!-- Lista de planes -->
-  @else if (hasPlans()) {
-  <div class="plans-grid">
-    @for (plan of plans(); track plan.id_plan) {
-    <app-plan-card-detail
-      [plan]="plan"
-      (planSelected)="onPlanSelected($event)"
-      (planCompleted)="onPlanCompleted($event)">
-    </app-plan-card-detail>
+  <!-- Detalles del plan -->
+  @else if (hasPlanDetails()) {
+  <div class="plan-content">
+    <!-- Información general del plan -->
+    @if (planWithDetails(); as plan) {
+    <div class="plan-header mb-6 p-4 bg-blue-50 rounded-lg">
+      <h2 class="text-xl font-bold text-blue-900 mb-2">{{ plan.titulo }}</h2>
+      <div class="flex justify-between items-center text-sm text-blue-700">
+        <span>{{ plan.libro.titulo }} - {{ plan.libro.autor }}</span>
+        <span>Progreso: {{ plan.progreso_porcentaje }}%</span>
+      </div>
+    </div>
+
+    <!-- Lista de detalles agrupados por día -->
+    <div class="days-container">
+      @for (day of getPlanDays(); track day) {
+      <div class="day-section mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+          Día {{ day }}
+        </h3>
+        <div class="day-details grid gap-4">
+          @for (detail of getPlanDetailsByDay()[day]; track detail.id_detalle) {
+          <app-plan-card-detail
+            [planDetail]="detail"
+            [dayNumber]="day"
+            (planDetailSelected)="onPlanDetailSelected($event)"
+            (markAsRead)="onMarkAsRead($event)">
+          </app-plan-card-detail>
+          }
+        </div>
+      </div>
+      }
+    </div>
     }
   </div>
   }
@@ -35,10 +59,10 @@
   <!-- Estado vacío -->
   @else {
   <div class="flex flex-col items-center justify-center p-8 text-center">
-    <mat-icon class="text-gray-400 text-6xl mb-4">library_books</mat-icon>
-    <h3 class="text-lg font-semibold text-gray-700 mb-2">No tienes planes de lectura</h3>
-    <p class="text-gray-500 mb-4">Crea tu primer plan de lectura para comenzar</p>
-    <button mat-raised-button color="primary" (click)="refreshPlans()">
+    <mat-icon class="text-gray-400 text-6xl mb-4">book</mat-icon>
+    <h3 class="text-lg font-semibold text-gray-700 mb-2">No hay detalles del plan</h3>
+    <p class="text-gray-500 mb-4">No se encontraron detalles para este plan de lectura</p>
+    <button mat-raised-button color="primary" (click)="refreshPlan()">
       Actualizar
     </button>
   </div>

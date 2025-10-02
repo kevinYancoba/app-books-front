@@ -1,0 +1,31 @@
+.home-plan-detail-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.back-button {
+  color: #6b7280;
+}
+
+.back-button:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+@media (max-width: 768px) {
+  .home-plan-detail-container {
+    padding: 8px;
+  }
+
+  .header-section h1 {
+    font-size: 1.25rem;
+  }
+}

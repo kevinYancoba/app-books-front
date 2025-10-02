@@ -1,100 +1,207 @@
+@if (planDetail; as detail) {
 <mat-card
   appearance="outlined"
-  class="m-2 cursor-pointer hover:shadow-md transition-shadow duration-200"
-  (click)="onCardClick()">
-
+  class="plan-detail-card"
+  (click)="onCardClick()"
+>
   <mat-card-header>
-    <div mat-card-avatar class="flex items-center justify-center">
-      <mat-icon [fontIcon]="getStatusIcon()" [color]="statusColor()"></mat-icon>
+    <div class="flex w-full justify-between items-center">
+      <!-- Avatar + Título/Subtítulo -->
+      <div class="flex items-center gap-3">
+        <div mat-card-avatar class="example-header-image"></div>
+        <div>
+          <mat-card-title>
+            {{ detail.capitulo.titulo_capitulo }}
+          </mat-card-title>
+          <mat-card-subtitle class="text-sm text-gray-600">
+            Capítulo {{ detail.capitulo.numero_capitulo }}
+          </mat-card-subtitle>
+        </div>
+      </div>
+
+      <!-- Checkbox -->
+      <div>
+        @if (!detail.leido) {
+        <mat-checkbox
+          [checked]="isCompleted()"
+          (change)="onCompletedChange($event.checked)"
+          color="primary"
+        >
+        </mat-checkbox>
+        }
+      </div>
     </div>
-    <mat-card-title class="text-lg font-semibold">
-      {{ plan.libro.titulo }}
-    </mat-card-title>
-    <mat-card-subtitle class="text-sm text-gray-600">
-      por {{ plan.libro.autor }}
-    </mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content class="mt-4">
-    <!-- Información del progreso -->
-    <div class="mb-4">
-      <div class="flex justify-between items-center mb-2">
-        <span class="text-sm font-medium">Progreso</span>
+    <!-- <div class="">
+      <div class="flex items-center">
+        <span class="text-sm font-medium">Páginas&nbsp;del&nbsp;libro</span>
         <span class="text-sm text-gray-600">
-          {{ plan.estadisticas.paginasLeidas }} / {{ plan.estadisticas.totalPaginas }} páginas
+          &nbsp;{{ pageRange() }} ({{ detail.capitulo.paginas_estimadas }}
+          páginas)
         </span>
       </div>
-      <mat-progress-bar
-        mode="determinate"
-        [value]="progressPercentage()"
-        [color]="statusColor()">
-      </mat-progress-bar>
-      <div class="text-xs text-gray-500 mt-1">
-        {{ progressPercentage() }}% completado
+      <div class="flex items-center">
+        <span class="text-sm font-medium">Tiempo estimado</span>
+        <span class="text-sm text-gray-600">
+          &nbsp;{{ detail.tiempo_estimado_minutos }} minutos
+        </span>
       </div>
-    </div>
-
-    <!-- Estadísticas del plan -->
-    <div class="grid grid-cols-2 gap-4 mb-4">
-      <div class="text-center">
-        <div class="text-lg font-semibold text-blue-600">
-          {{ plan.estadisticas.capitulosCompletados }}
-        </div>
-        <div class="text-xs text-gray-500">
-          de {{ plan.estadisticas.totalCapitulos }} capítulos
-        </div>
+      <div class="flex items-center">
+        <span class="text-sm font-medium">Fecha asignada</span>
+        <span class="text-sm text-gray-600">
+          &nbsp;{{ formatDate(detail.fecha_asignada) }}
+        </span>
       </div>
-      <div class="text-center">
-        <div class="text-lg font-semibold" [class.text-red-500]="isOverdue()" [class.text-green-600]="!isOverdue()">
-          {{ daysRemaining() }}
-        </div>
-        <div class="text-xs text-gray-500">
-          días restantes
-        </div>
+    </div> -->
+
+     <mat-chip-set>
+        @if (detail.leido) {
+        <mat-chip color="primary">
+          <mat-icon matChipAvatar fontIcon="check_circle"></mat-icon>
+          Completado
+        </mat-chip>
+        } @else {
+        <mat-chip color="accent">
+          <mat-icon matChipAvatar fontIcon="schedule"></mat-icon>
+          Pendiente
+        </mat-chip>
+        } @if (isOverdue()) {
+        <mat-chip color="warn">
+          <mat-icon matChipAvatar fontIcon="warning"></mat-icon>
+          Atrasado
+        </mat-chip>
+        }
+
+
+         <mat-chip color="warn">
+          <mat-icon matChipAvatar fontIcon="numbers"></mat-icon>
+          {{ pageRange() }}&nbsp;pg
+        </mat-chip>
+         <mat-chip color="warn">
+          <mat-icon matChipAvatar fontIcon="access_time"></mat-icon>
+          {{ detail.tiempo_estimado_minutos }} minutos
+        </mat-chip>
+         <mat-chip color="warn">
+          <mat-icon matChipAvatar fontIcon="event_available"></mat-icon>
+          {{ formatDate(detail.fecha_asignada) }}
+        </mat-chip>
+      </mat-chip-set>
+
+    <!-- Información adicional si está completado -->
+    @if (detail.leido && detail.fecha_completado) {
+    <div class="completed-info mb-4 p-3 bg-green-50 rounded-lg">
+      <div class="text-sm font-medium text-green-800 mb-2">
+        Información de lectura
       </div>
-    </div>
-
-    <!-- Fechas del plan -->
-    <div class="flex justify-between text-xs text-gray-500 mb-4">
-      <span>Inicio: {{ formatDate(plan.fecha_inicio) }}</span>
-      <span>Fin: {{ formatDate(plan.fecha_fin) }}</span>
-    </div>
-
-    <!-- Estado y chips informativos -->
-    <div class="flex justify-between items-center">
-      <div class="flex gap-2">
-        <mat-chip-set>
-          <mat-chip [color]="statusColor()">
-            {{ plan.estado }}
-          </mat-chip>
-          @if (plan.generado_por_ia) {
-          <mat-chip color="accent">
-            <mat-icon matChipAvatar>smart_toy</mat-icon>
-            IA
-          </mat-chip>
-          }
-          @if (plan.incluir_fines_semana) {
-          <mat-chip>
-            <mat-icon matChipAvatar>weekend</mat-icon>
-            Fines de semana
-          </mat-chip>
-          }
-          @if (isOverdue()) {
-          <mat-chip color="warn">
-            <mat-icon matChipAvatar>schedule</mat-icon>
-            {{ plan.dias_atrasado }} días atrasado
-          </mat-chip>
-          }
-        </mat-chip-set>
+      <div class="text-xs text-green-700 mb-1">
+        Completado: {{ formatDate(detail.fecha_completado) }}
       </div>
-
-      <!-- Checkbox para marcar como completado -->
-      <mat-checkbox
-        [checked]="isCompleted()"
-        (change)="onCompletedChange($event.checked)"
-        (click)="$event.stopPropagation()"
-        color="primary">
-      </mat-checkbox>
+      @if (detail.tiempo_real_minutos) {
+      <div class="text-xs text-green-700 mb-1">
+        Tiempo real: {{ detail.tiempo_real_minutos }} minutos
+      </div>
+      } @if (detail.dificultad_percibida) {
+      <div class="text-xs text-green-700 mb-1">
+        Dificultad: {{ getDifficultyText(detail.dificultad_percibida) }}
+      </div>
+      } @if (detail.notas) {
+      <div class="text-xs text-green-700">Notas: {{ detail.notas }}</div>
+      }
     </div>
+    }
   </mat-card-content>
+  <!-- <mat-card-footer class="px-4 mt-4">
+    <div class="status-section mb-4">
+      <mat-chip-set>
+        @if (detail.leido) {
+        <mat-chip color="primary">
+          <mat-icon matChipAvatar fontIcon="check_circle"></mat-icon>
+          Completado
+        </mat-chip>
+        } @else {
+        <mat-chip color="accent">
+          <mat-icon matChipAvatar fontIcon="schedule"></mat-icon>
+          Pendiente
+        </mat-chip>
+        } @if (isOverdue()) {
+        <mat-chip color="warn">
+          <mat-icon matChipAvatar fontIcon="warning"></mat-icon>
+          Atrasado
+        </mat-chip>
+        }
+
+
+         <mat-chip color="warn">
+          <mat-icon matChipAvatar fontIcon="numbers"></mat-icon>
+          {{ pageRange() }}&nbsp;pg
+        </mat-chip>
+         <mat-chip color="warn">
+          <mat-icon matChipAvatar fontIcon="access_time"></mat-icon>
+          {{ detail.tiempo_estimado_minutos }} minutos
+        </mat-chip>
+         <mat-chip color="warn">
+          <mat-icon matChipAvatar fontIcon="event_available"></mat-icon>
+          {{ formatDate(detail.fecha_asignada) }}
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+  </mat-card-footer> -->
+  <mat-card-actions class="">
+    @if (showReadForm()) {
+    <div class="px-2 w-full">
+      <h4 class="text-sm font-medium mb-3">Información de lectura</h4>
+
+      <!-- Tiempo real -->
+      <mat-form-field appearance="outline" class="w-full mb-3">
+        <mat-label>Tiempo real (minutos)</mat-label>
+        <input
+          matInput
+          type="number"
+          [value]="tiempoReal()"
+          (input)="tiempoReal.set(+$any($event.target).value)"
+          min="1"
+        />
+      </mat-form-field>
+
+      <div class="mb-2 w-full">
+        <label class="text-sm font-medium block mb-2"
+          >Dificultad percibida</label
+        >
+        <mat-slider min="1" max="5" step="1">
+          <input
+            matSliderThumb
+            [value]="dificultad()"
+            (input)="dificultad.set($any($event.target).value)"
+          />
+        </mat-slider>
+        <div class="text-xs text-gray-600 mt-1">
+          {{ getDifficultyText(dificultad()) }}
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full mb-2">
+        <mat-label>Notas (opcional)</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          [value]="notas()"
+          (input)="notas.set($any($event.target).value)"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Botones -->
+      <div class="flex gap-2 justify-end">
+        <button mat-stroked-button (click)="onCancelMarkAsRead()">
+          Cancelar
+        </button>
+        <button mat-flat-button color="primary" (click)="onConfirmMarkAsRead()">
+          Confirmar
+        </button>
+      </div>
+    </div>
+    }
+  </mat-card-actions>
 </mat-card>
+}

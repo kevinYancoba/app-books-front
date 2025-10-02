@@ -8,6 +8,13 @@ const planDetailRoutes: Routes = [
         '../plan-detail/pages/home-plan-detail/home-plan-detail.component'
       ).then((c) => c.HomePlanDetailComponent),
   },
+  {
+    path: ':planId',
+    loadComponent: () =>
+      import(
+        '../plan-detail/pages/home-plan-detail/home-plan-detail.component'
+      ).then((c) => c.HomePlanDetailComponent),
+  },
 ];
 
 export default planDetailRoutes;

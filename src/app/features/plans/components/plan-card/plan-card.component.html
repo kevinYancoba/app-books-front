@@ -61,23 +61,6 @@
   </mat-card-content>
 
   <mat-card-footer class="mt-4 px-4">
-    <div class="mb-4">
-      <div class="flex justify-between">
-        <span class="progress-text">{{ progressPercentage() }}%</span>
-        <span class="pages-info">
-          {{ currentPlan.estadisticas.paginasLeidas }} /
-          {{ currentPlan.estadisticas.totalPaginas }} pg
-        </span>
-      </div>
-      <mat-progress-bar
-        mode="determinate"
-        [value]="progressPercentage()"
-        [color]="statusColor()"
-        class="progress-bar"
-      >
-      </mat-progress-bar>
-    </div>
-
     <mat-chip-set>
       <mat-chip [color]="getStateColor(currentPlan.estado)">
         {{ currentPlan.estado }}
@@ -99,8 +82,24 @@
       </mat-chip>
       }
     </mat-chip-set>
+
+    <div class="my-4">
+      <div class="flex justify-between">
+        <span class="progress-text">{{ progressPercentage() }}%</span>
+        <span class="pages-info">
+          {{ currentPlan.estadisticas.paginasLeidas }} /
+          {{ currentPlan.estadisticas.totalPaginas }} pg
+        </span>
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressPercentage()"
+        [color]="statusColor()"
+        class="progress-bar"
+      >
+      </mat-progress-bar>
+    </div>
   </mat-card-footer>
-  <!-- Chips informativos -->
 
   <!-- Acciones -->
   <mat-card-actions align="end" class="plan-actions">

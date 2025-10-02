@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -6,13 +7,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlanCardDetailComponent } from "../plan-card-detail/plan-card-detail.component";
-import { PlanService } from '../../../plans/services/plan.service';
-import { AuthService } from '../../../../auth/services/auth.service';
-import { PlanDetailed } from '../../../plans/models/plan-model';
+import { PlanDetailService } from '../../services/plan-detail.service';
+import {
+  PlanWithDetails,
+  PlanDetail,
+  MarkChaptersReadRequest
+} from '../../../plans/models/plan-model';
 
 @Component({
   selector: 'app-plan-card-detail-list',
   imports: [
+    CommonModule,
     MatListModule,
     MatDividerModule,
     PlanCardDetailComponent,
@@ -24,97 +29,148 @@ import { PlanDetailed } from '../../../plans/models/plan-model';
   styleUrl: './plan-card-detail-list.component.scss'
 })
 export class PlanCardDetailListComponent implements OnInit {
+  // Inputs
+  @Input() planId: number | null = null;
+
+  // Outputs
+  @Output() planDetailSelected = new EventEmitter<PlanDetail>();
+  @Output() chapterMarkedAsRead = new EventEmitter<{
+    planDetail: PlanDetail;
+    tiempoRealMinutos: number;
+    dificultadPercibida: number;
+    notas: string;
+  }>();
+
   // Servicios inyectados
-  private planService = inject(PlanService);
-  private authService = inject(AuthService);
+  private planDetailService = inject(PlanDetailService);
   private snackBar = inject(MatSnackBar);
 
   // Signals para el estado del componente
-  plans = signal<PlanDetailed[]>([]);
+  planWithDetails = signal<PlanWithDetails | null>(null);
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
 
   ngOnInit(): void {
-    this.loadUserPlans();
+    if (this.planId) {
+      this.loadPlanDetails();
+    }
   }
 
   /**
-   * Carga los planes del usuario actual
+   * Carga los detalles del plan específico
    */
-  private loadUserPlans(): void {
-    const currentUser = this.authService.currentUser();
-
-    if (!currentUser) {
-      this.error.set('Usuario no autenticado');
-      this.snackBar.open('Error: Usuario no autenticado', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+  private loadPlanDetails(): void {
+    if (!this.planId) {
+      this.error.set('ID de plan no proporcionado');
       return;
     }
 
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.planService.getUserPlans(parseInt(currentUser.id)).subscribe({
-      next: (plans) => {
-        this.plans.set(plans);
+    this.planDetailService.getPlanById(this.planId).subscribe({
+      next: (plan) => {
+        this.planWithDetails.set(plan);
         this.isLoading.set(false);
-        console.log('Planes cargados:', plans);
+        console.log('Plan con detalles cargado:', plan);
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.error.set('Error al cargar los planes');
-        this.snackBar.open('Error al cargar los planes de lectura', 'Cerrar', {
+        this.error.set('Error al cargar el plan');
+        this.snackBar.open('Error al cargar los detalles del plan', 'Cerrar', {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
-        console.error('Error al cargar planes:', error);
+        console.error('Error al cargar plan:', error);
       }
     });
   }
 
   /**
-   * Maneja la selección de un plan
+   * Maneja la selección de un detalle del plan
    */
-  onPlanSelected(plan: PlanDetailed): void {
-    console.log('Plan seleccionado:', plan);
-    // Aquí puedes agregar navegación o abrir un modal con detalles
-    this.snackBar.open(`Plan "${plan.libro.titulo}" seleccionado`, 'Cerrar', {
-      duration: 2000,
-      panelClass: ['success-snackbar']
+  onPlanDetailSelected(planDetail: PlanDetail): void {
+    console.log('Detalle del plan seleccionado:', planDetail);
+    this.planDetailSelected.emit(planDetail);
+  }
+
+  /**
+   * Maneja el marcado de capítulos como leídos
+   */
+  onMarkAsRead(event: {
+    planDetail: PlanDetail;
+    tiempoRealMinutos: number;
+    dificultadPercibida: number;
+    notas: string;
+  }): void {
+    if (!this.planId) return;
+
+    const request: MarkChaptersReadRequest = {
+      detalleIds: [event.planDetail.id_detalle],
+      tiempoRealMinutos: event.tiempoRealMinutos,
+      dificultadPercibida: event.dificultadPercibida,
+      notas: event.notas
+    };
+
+    this.planDetailService.markChaptersAsRead(this.planId, request).subscribe({
+      next: (response) => {
+        this.snackBar.open(response.mensaje, 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+
+        // Emitir evento para notificar al componente padre
+        this.chapterMarkedAsRead.emit(event);
+
+        // Recargar los detalles del plan para mostrar los cambios
+        this.loadPlanDetails();
+      },
+      error: (error) => {
+        this.snackBar.open('Error al marcar capítulo como leído', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        console.error('Error al marcar como leído:', error);
+      }
     });
   }
 
   /**
-   * Maneja el cambio de estado de completado de un plan
+   * Recarga los detalles del plan
    */
-  onPlanCompleted(event: { plan: PlanDetailed, completed: boolean }): void {
-    const { plan, completed } = event;
-    console.log(`Plan ${plan.libro.titulo} marcado como ${completed ? 'completado' : 'no completado'}`);
+  refreshPlan(): void {
+    this.loadPlanDetails();
+  }
 
-    // Aquí puedes agregar lógica para actualizar el estado en el backend
-    this.snackBar.open(
-      `Plan "${plan.libro.titulo}" ${completed ? 'completado' : 'marcado como pendiente'}`,
-      'Cerrar',
-      {
-        duration: 2000,
-        panelClass: [completed ? 'success-snackbar' : 'info-snackbar']
+  /**
+   * Verifica si hay detalles del plan para mostrar
+   */
+  hasPlanDetails(): boolean {
+    const plan = this.planWithDetails();
+    return plan !== null && plan.detalleplanlectura.length > 0;
+  }
+
+  /**
+   * Obtiene los detalles del plan agrupados por día
+   */
+  getPlanDetailsByDay(): { [day: number]: PlanDetail[] } {
+    const plan = this.planWithDetails();
+    if (!plan) return {};
+
+    return plan.detalleplanlectura.reduce((acc, detail) => {
+      if (!acc[detail.dia]) {
+        acc[detail.dia] = [];
       }
-    );
+      acc[detail.dia].push(detail);
+      return acc;
+    }, {} as { [day: number]: PlanDetail[] });
   }
 
   /**
-   * Recarga los planes
+   * Obtiene los días únicos del plan
    */
-  refreshPlans(): void {
-    this.loadUserPlans();
-  }
-
-  /**
-   * Verifica si hay planes para mostrar
-   */
-  hasPlans(): boolean {
-    return this.plans().length > 0;
+  getPlanDays(): number[] {
+    const detailsByDay = this.getPlanDetailsByDay();
+    return Object.keys(detailsByDay).map(day => parseInt(day)).sort((a, b) => a - b);
   }
 }

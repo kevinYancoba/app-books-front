@@ -1,62 +1,74 @@
 import { Component, Input, Output, EventEmitter, computed, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatCardModule } from "@angular/material/card";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { FormsModule } from "@angular/forms";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatChipsModule } from "@angular/material/chips";
-import { DatePipe } from "@angular/common";
-import { PlanDetailed } from '../../../plans/models/plan-model';
+import { MatButtonModule } from "@angular/material/button";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatSliderModule } from "@angular/material/slider";
+import { PlanDetail } from '../../../plans/models/plan-model';
 
 @Component({
   selector: 'app-plan-card-detail',
   imports: [
+    CommonModule,
     MatCardModule,
     MatCheckboxModule,
     FormsModule,
     MatIconModule,
     MatProgressBarModule,
     MatChipsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSliderModule
   ],
   templateUrl: './plan-card-detail.component.html',
   styleUrl: './plan-card-detail.component.scss'
 })
 export class PlanCardDetailComponent {
-  @Input({ required: true }) plan!: PlanDetailed;
-  @Output() planSelected = new EventEmitter<PlanDetailed>();
-  @Output() planCompleted = new EventEmitter<{ plan: PlanDetailed, completed: boolean }>();
+  @Input({ required: true }) planDetail!: PlanDetail;
+  @Input() dayNumber: number = 1;
+  @Output() planDetailSelected = new EventEmitter<PlanDetail>();
+  @Output() markAsRead = new EventEmitter<{
+    planDetail: PlanDetail;
+    tiempoRealMinutos: number;
+    dificultadPercibida: number;
+    notas: string;
+  }>();
 
-  // Signal para el estado del checkbox
+  // Signals para el formulario de marcar como leído
   isCompleted = signal<boolean>(false);
+  tiempoReal = signal<number>(0);
+  dificultad = signal<number>(1);
+  notas = signal<string>('');
+  showReadForm = signal<boolean>(false);
 
   // Computed signals para datos derivados
-  progressPercentage = computed(() => {
-    if (!this.plan?.estadisticas) return 0;
-    const { paginasLeidas, totalPaginas } = this.plan.estadisticas;
-    return totalPaginas > 0 ? Math.round((paginasLeidas / totalPaginas) * 100) : 0;
-  });
-
-  daysRemaining = computed(() => {
-    if (!this.plan?.estadisticas) return 0;
-    return Math.max(0, this.plan.estadisticas.diasRestantes);
-  });
-
   isOverdue = computed(() => {
-    return this.plan?.dias_atrasado > 0;
+    return this.planDetail?.es_atrasado || false;
   });
 
   statusColor = computed(() => {
     if (this.isOverdue()) return 'warn';
-    if (this.progressPercentage() >= 80) return 'primary';
-    if (this.progressPercentage() >= 50) return 'accent';
-    return 'primary';
+    if (this.planDetail?.leido) return 'primary';
+    return 'accent';
+  });
+
+  pageRange = computed(() => {
+    if (!this.planDetail) return '';
+    return `${this.planDetail.pagina_inicio} - ${this.planDetail.pagina_fin}`;
   });
 
   /**
-   * Maneja el clic en la tarjeta para seleccionar el plan
+   * Maneja el clic en la tarjeta para seleccionar el detalle del plan
    */
   onCardClick(): void {
-    this.planSelected.emit(this.plan);
+    this.planDetailSelected.emit(this.planDetail);
   }
 
   /**
@@ -64,25 +76,59 @@ export class PlanCardDetailComponent {
    */
   onCompletedChange(completed: boolean): void {
     this.isCompleted.set(completed);
-    this.planCompleted.emit({ plan: this.plan, completed });
+    if (completed) {
+      this.showReadForm.set(true);
+    } else {
+      this.showReadForm.set(false);
+      this.resetForm();
+    }
   }
 
   /**
-   * Obtiene el icono según el estado del plan
+   * Confirma marcar como leído con los datos del formulario
+   */
+  onConfirmMarkAsRead(): void {
+    if (this.tiempoReal() > 0) {
+      this.markAsRead.emit({
+        planDetail: this.planDetail,
+        tiempoRealMinutos: this.tiempoReal(),
+        dificultadPercibida: this.dificultad(),
+        notas: this.notas()
+      });
+      this.showReadForm.set(false);
+      this.resetForm();
+    }
+  }
+
+  /**
+   * Cancela el formulario de marcar como leído
+   */
+  onCancelMarkAsRead(): void {
+    this.isCompleted.set(false);
+    this.showReadForm.set(false);
+    this.resetForm();
+  }
+
+  /**
+   * Resetea el formulario
+   */
+  private resetForm(): void {
+    this.tiempoReal.set(this.planDetail?.tiempo_estimado_minutos || 0);
+    this.dificultad.set(1);
+    this.notas.set('');
+  }
+
+  /**
+   * Obtiene el icono según el estado del detalle
    */
   getStatusIcon(): string {
-    switch (this.plan?.estado) {
-      case 'ACTIVO':
-        return 'play_circle';
-      case 'COMPLETADO':
-        return 'check_circle';
-      case 'PAUSADO':
-        return 'pause_circle';
-      case 'CANCELADO':
-        return 'cancel';
-      default:
-        return 'book';
+    if (this.planDetail?.leido) {
+      return 'check_circle';
     }
+    if (this.isOverdue()) {
+      return 'schedule';
+    }
+    return 'book';
   }
 
   /**
@@ -94,5 +140,13 @@ export class PlanCardDetailComponent {
       month: '2-digit',
       year: 'numeric'
     });
+  }
+
+  /**
+   * Obtiene el texto de dificultad
+   */
+  getDifficultyText(level: number): string {
+    const levels = ['Muy fácil', 'Fácil', 'Normal', 'Difícil', 'Muy difícil'];
+    return levels[level - 1] || 'Normal';
   }
 }

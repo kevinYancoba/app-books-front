@@ -55,5 +55,60 @@ export interface CreatePlanResponse {
   plan: Plan;
 }
 
+// Interfaces para plan detallado con capítulos
+export interface PlanWithDetails extends Plan {
+  detalleplanlectura: PlanDetail[];
+}
+
+export interface PlanDetail {
+  id_detalle: number;
+  id_plan: number;
+  id_capitulo: number;
+  fecha_asignada: string;
+  leido: boolean;
+  tiempo_estimado_minutos: number;
+  pagina_inicio: number;
+  pagina_fin: number;
+  dia: number;
+  created_at: string;
+  dificultad_percibida: number | null;
+  es_atrasado: boolean;
+  fecha_completado: string | null;
+  notas: string | null;
+  tiempo_real_minutos: number | null;
+  updated_at: string | null;
+  capitulo: Chapter;
+}
+
+export interface Chapter {
+  id_capitulo: number;
+  numero_capitulo: number;
+  titulo_capitulo: string;
+  paginas_estimadas: number;
+}
+
+// Request para marcar capítulos como leídos
+export interface MarkChaptersReadRequest {
+  detalleIds: number[];
+  tiempoRealMinutos: number;
+  dificultadPercibida: number;
+  notas: string;
+}
+
+// Response al marcar capítulos como leídos
+export interface MarkChaptersReadResponse {
+  mensaje: string;
+  capitulosMarcados: number;
+  nuevoProgreso: number;
+  detallesActualizados: UpdatedDetail[];
+}
+
+export interface UpdatedDetail {
+  id_detalle: number;
+  leido: boolean;
+  fecha_completado: string;
+  tiempo_real_minutos: number;
+}
+
 // Alias para compatibilidad con plan-detail
 export type PlanDetailed = Plan;
