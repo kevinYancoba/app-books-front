@@ -128,9 +128,9 @@
           <button mat-button (click)="stepper.reset()" type="button">
             Reiniciar
           </button>
-          <button mat-raised-button color="primary"
+          <button mat-flat-button color="primary"
                   (click)="submitForm()"
-                  [disabled]="!isFormValid() || planService.isLoading()"
+                  [disabled]="!isFormCompletelyValid() || planService.isLoading()"
                   type="button">
             @if (planService.isLoading()) {
             <mat-spinner diameter="20" class="mr-2"></mat-spinner>

@@ -1,21 +1,100 @@
-<mat-card appearance="outlined" class="m-2">
-  <div class="flex justify-between">
-    <div>
-      <mat-card-header>
-        <div mat-card-avatar class="bg-cover flex items-center">
-          <mat-icon
-            fontIcon="book"
-          ></mat-icon>
+<mat-card
+  appearance="outlined"
+  class="m-2 cursor-pointer hover:shadow-md transition-shadow duration-200"
+  (click)="onCardClick()">
+
+  <mat-card-header>
+    <div mat-card-avatar class="flex items-center justify-center">
+      <mat-icon [fontIcon]="getStatusIcon()" [color]="statusColor()"></mat-icon>
+    </div>
+    <mat-card-title class="text-lg font-semibold">
+      {{ plan.libro.titulo }}
+    </mat-card-title>
+    <mat-card-subtitle class="text-sm text-gray-600">
+      por {{ plan.libro.autor }}
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content class="mt-4">
+    <!-- Información del progreso -->
+    <div class="mb-4">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium">Progreso</span>
+        <span class="text-sm text-gray-600">
+          {{ plan.estadisticas.paginasLeidas }} / {{ plan.estadisticas.totalPaginas }} páginas
+        </span>
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressPercentage()"
+        [color]="statusColor()">
+      </mat-progress-bar>
+      <div class="text-xs text-gray-500 mt-1">
+        {{ progressPercentage() }}% completado
+      </div>
+    </div>
+
+    <!-- Estadísticas del plan -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="text-center">
+        <div class="text-lg font-semibold text-blue-600">
+          {{ plan.estadisticas.capitulosCompletados }}
         </div>
-        <mat-card-title>Dia 1</mat-card-title>
-        <mat-card-subtitle>Que es la teologia sistematica</mat-card-subtitle>
-      </mat-card-header>
+        <div class="text-xs text-gray-500">
+          de {{ plan.estadisticas.totalCapitulos }} capítulos
+        </div>
+      </div>
+      <div class="text-center">
+        <div class="text-lg font-semibold" [class.text-red-500]="isOverdue()" [class.text-green-600]="!isOverdue()">
+          {{ daysRemaining() }}
+        </div>
+        <div class="text-xs text-gray-500">
+          días restantes
+        </div>
+      </div>
     </div>
-    <div class="flex items-center">
-      <mat-card-content class="">
-        <span class="font-semibold">paginas 2-4</span>
-        <mat-checkbox class="example-margin"></mat-checkbox>
-      </mat-card-content>
+
+    <!-- Fechas del plan -->
+    <div class="flex justify-between text-xs text-gray-500 mb-4">
+      <span>Inicio: {{ formatDate(plan.fecha_inicio) }}</span>
+      <span>Fin: {{ formatDate(plan.fecha_fin) }}</span>
     </div>
-  </div>
+
+    <!-- Estado y chips informativos -->
+    <div class="flex justify-between items-center">
+      <div class="flex gap-2">
+        <mat-chip-set>
+          <mat-chip [color]="statusColor()">
+            {{ plan.estado }}
+          </mat-chip>
+          @if (plan.generado_por_ia) {
+          <mat-chip color="accent">
+            <mat-icon matChipAvatar>smart_toy</mat-icon>
+            IA
+          </mat-chip>
+          }
+          @if (plan.incluir_fines_semana) {
+          <mat-chip>
+            <mat-icon matChipAvatar>weekend</mat-icon>
+            Fines de semana
+          </mat-chip>
+          }
+          @if (isOverdue()) {
+          <mat-chip color="warn">
+            <mat-icon matChipAvatar>schedule</mat-icon>
+            {{ plan.dias_atrasado }} días atrasado
+          </mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+
+      <!-- Checkbox para marcar como completado -->
+      <mat-checkbox
+        [checked]="isCompleted()"
+        (change)="onCompletedChange($event.checked)"
+        (click)="$event.stopPropagation()"
+        color="primary">
+      </mat-checkbox>
+    </div>
+  </mat-card-content>
 </mat-card>

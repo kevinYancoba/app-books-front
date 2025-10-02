@@ -19,7 +19,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-  MatTimepicker,
   MatTimepickerModule,
   MatTimepickerOption,
 } from '@angular/material/timepicker';
@@ -48,13 +47,11 @@ import { ImageCompressionUtil } from '../../../../core/utils/image-compression.u
   templateUrl: './plan-stepper.component.html',
 })
 export class PlanStepperComponent {
-  // Servicios inyectados
   private _formBuilder = inject(FormBuilder);
   private authService = inject(AuthService);
   public planService = inject(PlanService);
   private snackBar = inject(MatSnackBar);
 
-  // Signals para el estado del componente
   nivelLectura = signal([
     { value: 'novato', viewValue: 'Novato' },
     { value: 'intermedio', viewValue: 'Intermedio' },
@@ -67,10 +64,36 @@ export class PlanStepperComponent {
   isCompressingImage = signal<boolean>(false);
   fileError = signal<string>('');
   isFormValid = computed(() => {
-    return this.firstFormGroup.valid &&
-           this.secondFormGroup.valid &&
-           this.compressedImageBase64().length > 0;
+    return (
+      this.firstFormGroup.valid &&
+      this.secondFormGroup.valid &&
+      this.compressedImageBase64().length > 0
+    );
   });
+
+  /**
+   * Verifica si el formulario completo es válido
+   */
+  isFormCompletelyValid(): boolean {
+    const firstValid = this.firstFormGroup.valid;
+    const secondValid = this.secondFormGroup.valid;
+    const hasImage = this.compressedImageBase64().length > 0;
+    const notCompressing = !this.isCompressingImage();
+
+    console.log('Form validation check:', {
+      firstValid,
+      secondValid,
+      hasImage,
+      notCompressing,
+      firstFormErrors: this.firstFormGroup.errors,
+      secondFormErrors: this.secondFormGroup.errors,
+      firstFormValue: this.firstFormGroup.value,
+      secondFormValue: this.secondFormGroup.value,
+      imageLength: this.compressedImageBase64().length,
+    });
+
+    return firstValid && secondValid && hasImage && notCompressing;
+  }
 
   customOptions: MatTimepickerOption<Date>[] = [
     { label: 'Mañana', value: new Date(2025, 0, 1, 9, 0, 0) },
@@ -82,17 +105,30 @@ export class PlanStepperComponent {
   firstFormGroup = this._formBuilder.group({
     nivelLectura: ['', Validators.required],
     horarioLectura: ['', Validators.required],
-    tiempoLecturaDiario: [30, [Validators.required, Validators.min(1), Validators.max(480)]],
+    tiempoLecturaDiario: [
+      30,
+      [Validators.required, Validators.min(1), Validators.max(480)],
+    ],
     fechaFin: ['', Validators.required],
-    finesSemana: [true]
+    finesSemana: [true],
   });
 
   secondFormGroup = this._formBuilder.group({
     tituloLibro: ['', [Validators.required, Validators.minLength(2)]],
-    autorLibro: ['', [Validators.required, Validators.minLength(2)]]
+    autorLibro: ['', [Validators.required, Validators.minLength(2)]],
   });
 
   isLinear = true;
+
+  constructor() {
+    this.firstFormGroup.statusChanges.subscribe((status) => {
+      console.log('First form status:', status, this.firstFormGroup.value);
+    });
+
+    this.secondFormGroup.statusChanges.subscribe((status) => {
+      console.log('Second form status:', status, this.secondFormGroup.value);
+    });
+  }
 
   /**
    * Maneja la selección de archivo de imagen
@@ -108,14 +144,18 @@ export class PlanStepperComponent {
 
     // Validar tipo de archivo
     if (!ImageCompressionUtil.validateFileType(file)) {
-      this.fileError.set('Solo se permiten archivos de imagen (JPEG, PNG, WebP)');
+      this.fileError.set(
+        'Solo se permiten archivos de imagen (JPEG, PNG, WebP)'
+      );
       this.clearFileSelection();
       return;
     }
 
     // Validar tamaño de archivo (máximo 10MB)
     if (!ImageCompressionUtil.validateFileSize(file, 10)) {
-      this.fileError.set('El archivo es demasiado grande. Máximo 10MB permitido');
+      this.fileError.set(
+        'El archivo es demasiado grande. Máximo 10MB permitido'
+      );
       this.clearFileSelection();
       return;
     }
@@ -136,7 +176,7 @@ export class PlanStepperComponent {
         file,
         800, // maxWidth
         600, // maxHeight
-        0.8  // quality
+        0.8 // quality
       );
 
       this.compressedImageBase64.set(compressedBase64);
@@ -145,7 +185,9 @@ export class PlanStepperComponent {
       console.log('Imagen comprimida exitosamente');
     } catch (error) {
       this.isCompressingImage.set(false);
-      this.fileError.set('Error al procesar la imagen. Intenta con otra imagen.');
+      this.fileError.set(
+        'Error al procesar la imagen. Intenta con otra imagen.'
+      );
       console.error('Error al comprimir imagen:', error);
     }
   }
@@ -175,11 +217,15 @@ export class PlanStepperComponent {
    * Envía el formulario al backend
    */
   submitForm(): void {
-    if (!this.isFormValid()) {
-      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+    if (!this.isFormCompletelyValid()) {
+      this.snackBar.open(
+        'Por favor completa todos los campos requeridos',
+        'Cerrar',
+        {
+          duration: 3000,
+          panelClass: ['error-snackbar'],
+        }
+      );
       return;
     }
 
@@ -187,7 +233,7 @@ export class PlanStepperComponent {
     if (!currentUser) {
       this.snackBar.open('Error: Usuario no autenticado', 'Cerrar', {
         duration: 3000,
-        panelClass: ['error-snackbar']
+        panelClass: ['error-snackbar'],
       });
       return;
     }
@@ -200,12 +246,14 @@ export class PlanStepperComponent {
       idUsuario: parseInt(currentUser.id),
       nivelLectura: firstFormData.nivelLectura!,
       tiempoLecturaDiario: firstFormData.tiempoLecturaDiario!,
-      horaioLectura: this.formatTimeForBackend(firstFormData.horarioLectura as any),
+      horaioLectura: this.formatTimeForBackend(
+        firstFormData.horarioLectura as any
+      ),
       fechaFin: this.formatDateForBackend(firstFormData.fechaFin as any),
       finesSemana: firstFormData.finesSemana!,
       tituloLibro: secondFormData.tituloLibro!,
       autorLibro: secondFormData.autorLibro!,
-      indiceBase64: this.compressedImageBase64()
+      indiceBase64: this.compressedImageBase64(),
     };
 
     // Enviar al backend
@@ -213,7 +261,7 @@ export class PlanStepperComponent {
       next: (response) => {
         this.snackBar.open('Plan de lectura creado exitosamente', 'Cerrar', {
           duration: 3000,
-          panelClass: ['success-snackbar']
+          panelClass: ['success-snackbar'],
         });
         this.resetForm();
         console.log('Plan creado:', response);
@@ -221,10 +269,10 @@ export class PlanStepperComponent {
       error: (error) => {
         this.snackBar.open('Error al crear el plan de lectura', 'Cerrar', {
           duration: 3000,
-          panelClass: ['error-snackbar']
+          panelClass: ['error-snackbar'],
         });
         console.error('Error al crear plan:', error);
-      }
+      },
     });
   }
 
@@ -278,12 +326,12 @@ export class PlanStepperComponent {
       horarioLectura: '',
       tiempoLecturaDiario: 30,
       fechaFin: '',
-      finesSemana: true
+      finesSemana: true,
     });
 
     this.secondFormGroup.reset({
       tituloLibro: '',
-      autorLibro: ''
+      autorLibro: '',
     });
 
     this.clearFileSelection();

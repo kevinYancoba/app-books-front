@@ -1,28 +1,129 @@
-<mat-card appearance="outlined">
+@if (plan(); as currentPlan) {
+<mat-card appearance="outlined" class="">
+  <!-- Header con información del libro -->
   <img
     mat-card-image
     src="https://material.angular.io/assets/img/examples/shiba2.jpg"
     alt="Photo of a Shiba Inu"
-    class="h-60 w-full object-cover"
+    class="h-48 w-full object-cover"
   />
-  <mat-card-header>
-    <mat-card-title-group>
-      <mat-card-title>Todos somos teologos</mat-card-title>
-      <mat-card-subtitle>capitulo 1</mat-card-subtitle>
-    </mat-card-title-group>
-  </mat-card-header>
-  <mat-card-content>
-    <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt adipisci,
-      nemo incidunt tempora
-    </p></mat-card-content
-  >
+  <mat-card-header >
+    <div class="flex w-full justify-between items-center">
+      <div>
+        <mat-card-title class="">
+          {{ currentPlan.libro.titulo }}
+        </mat-card-title>
+        <mat-card-subtitle class="plan-subtitle">
+          por {{ currentPlan.libro.autor }}
+        </mat-card-subtitle>
+      </div>
 
-  <mat-card-footer class="p-4">
-    <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+      <button mat-icon-button (click)="onEdit(currentPlan)" color="primary">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content class="mt-4">
+    <!-- Estadísticas en grid -->
+    <div class="stats-grid">
+      <div class="flex justify-start">
+        <div class="">
+          Llevas {{ currentPlan.estadisticas.capitulosCompletados }}&nbsp;
+        </div>
+        <div class="stat-label">
+          de&nbsp;{{ currentPlan.estadisticas.totalCapitulos }}&nbsp;capítulos
+          leidos,
+        </div>
+      </div>
+      <div class="flex justify-start">
+        <span>te quedan&nbsp;</span>
+        <div
+          class="stat-value"
+          [class.text-red-500]="isOverdue()"
+          [class.text-green-600]="!isOverdue()"
+        >
+          {{ daysRemaining() }}
+        </div>
+        <div class="stat-label">&nbsp;días para terminar de leer tu libro.</div>
+      </div>
+    </div>
+
+    <!-- Fechas del plan -->
+    <div class="flex justify-start">
+      <div class="flex items-center mr-1">
+        <span>Inicio: {{ formatDate(currentPlan.fecha_inicio) }}</span>
+      </div>
+      <div class="flex items-center">
+        <span>Fin: {{ formatDate(currentPlan.fecha_fin) }}</span>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-footer class="mt-4 px-4">
+    <div class="mb-4">
+      <div class="flex justify-between">
+        <span class="progress-text">{{ progressPercentage() }}%</span>
+        <span class="pages-info">
+          {{ currentPlan.estadisticas.paginasLeidas }} /
+          {{ currentPlan.estadisticas.totalPaginas }} pg
+        </span>
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressPercentage()"
+        [color]="statusColor()"
+        class="progress-bar"
+      >
+      </mat-progress-bar>
+    </div>
+
+    <mat-chip-set>
+      <mat-chip [color]="getStateColor(currentPlan.estado)">
+        {{ currentPlan.estado }}
+      </mat-chip>
+      @if (currentPlan.generado_por_ia) {
+      <mat-chip color="accent">
+        <mat-icon matChipAvatar>smart_toy</mat-icon>
+        IA
+      </mat-chip>
+      } @if (currentPlan.incluir_fines_semana) {
+      <mat-chip>
+        <mat-icon matChipAvatar>weekend</mat-icon>
+        Fines de semana
+      </mat-chip>
+      } @if (isOverdue()) {
+      <mat-chip color="warn">
+        <mat-icon matChipAvatar>schedule</mat-icon>
+        {{ currentPlan.dias_atrasado }} días atrasado
+      </mat-chip>
+      }
+    </mat-chip-set>
   </mat-card-footer>
-  <mat-card-actions align="end" class="mt-4">
-    <button mat-stroked-button class="m-2">editar plan</button>
-    <button mat-flat-button>ver plan</button>
+  <!-- Chips informativos -->
+
+  <!-- Acciones -->
+  <mat-card-actions align="end" class="plan-actions">
+    @if (currentPlan.estado !== 'COMPLETADO') {
+    <button
+      mat-stroked-button
+      (click)="onComplete(currentPlan)"
+      color="accent"
+      class="m-2"
+    >
+      <mat-icon>check_circle</mat-icon>
+      Completar
+    </button>
+    }
+    <button
+      mat-flat-button
+      (click)="onView(currentPlan)"
+      color="primary"
+      class="m-2"
+    >
+      <mat-icon>visibility</mat-icon>
+      Ver Plan
+    </button>
   </mat-card-actions>
 </mat-card>
+}

@@ -1,3 +1,11 @@
-<app-plan-list/>
+<app-plan-list
+  [plans]="plans()"
+  [isLoading]="isLoading()"
+  [error]="error()"
+  (planView)="onPlanView($event)"
+  (planEdit)="onPlanEdit($event)"
+  (planComplete)="onPlanComplete($event)"
+  (refreshPlans)="onRefreshPlans()"
+/>
 <app-main-button/>
 

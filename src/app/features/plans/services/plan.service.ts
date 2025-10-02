@@ -59,12 +59,12 @@ export class PlanService {
     this.setLoading(true);
     this.clearError();
 
-    return this.baseHttp.get<ApiResponse<Plan[]>>(
+    return this.baseHttp.get<Plan[]>(
       `/plan/user/${userId}`
     ).pipe(
-      map(response => response.data),
-      tap(() => {
+      tap((plans) => {
         this.setLoading(false);
+        console.log('Planes del usuario obtenidos:', plans);
       }),
       catchError(error => {
         this.handleError('Error al obtener los planes del usuario');

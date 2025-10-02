@@ -1,72 +1,81 @@
-<div class="flex justify-center mt-2 p-1">
-  <mat-accordion>
-    <mat-expansion-panel
-      (opened)="panelOpenState.set(true)"
-      (closed)="panelOpenState.set(false)"
-      class="p-0"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <span class="flex-shrink-0 text-sm">40%</span>
-          <mat-progress-bar
-            mode="determinate"
-            value="40"
-            class="flex-1"
-          ></mat-progress-bar>
-        </mat-panel-title>
-        <mat-panel-description class="flex justify-between text-sm">
-          Todos somos teólogos y el nombre mas largo
-          <mat-icon class="">auto_stories</mat-icon>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
+<div class="plan-list-container">
+  <!-- Estado de carga -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="50"></mat-spinner>
+      <h3 class="state-title">Cargando planes...</h3>
+      <p class="state-description">
+        Obteniendo tus planes de lectura
+      </p>
+    </div>
+  }
 
-      <app-plan-card />
-    </mat-expansion-panel>
+  <!-- Estado de error -->
+  @else if (error()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <h3 class="state-title">Error al cargar planes</h3>
+      <p class="state-description">
+        {{ error() }}
+      </p>
+      <button mat-raised-button color="primary" (click)="onRefreshPlans()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  }
 
-     <mat-expansion-panel
-      (opened)="panelOpenState.set(true)"
-      (closed)="panelOpenState.set(false)"
-      class="p-0"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <span class="flex-shrink-0 text-sm">40%</span>
-          <mat-progress-bar
-            mode="determinate"
-            value="40"
-            class="flex-1"
-          ></mat-progress-bar>
-        </mat-panel-title>
-        <mat-panel-description class="flex justify-between text-sm">
-          Todos somos teólogos y el nombre mas largo
-          <mat-icon class="">book_ribbon</mat-icon>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
+  <!-- Estado vacío -->
+  @else if (!hasPlans()) {
+    <div class="empty-state">
+      <mat-icon>library_books</mat-icon>
+      <h3 class="state-title">No tienes planes de lectura</h3>
+      <p class="state-description">
+        Crea tu primer plan de lectura para comenzar tu aventura literaria
+      </p>
+      <button mat-raised-button color="primary" (click)="onRefreshPlans()">
+        <mat-icon>add</mat-icon>
+        Crear Plan
+      </button>
+    </div>
+  }
 
-      <app-plan-card />
-    </mat-expansion-panel>
+  <!-- Lista de planes -->
+  @else {
+    <mat-accordion>
+      @for (plan of plans(); track plan.id_plan) {
+        <mat-expansion-panel
+          (opened)="togglePanel(plan.id_plan, true)"
+          (closed)="togglePanel(plan.id_plan, false)"
+          [class.overdue]="plan.dias_atrasado > 0"
+          [class.completed]="plan.estado === 'COMPLETADO'"
+          [class.paused]="plan.estado === 'PAUSADO'"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title class="panel-title">
+              <span class="progress-percentage">{{ getPlanProgress(plan) }}%</span>
+              <mat-progress-bar
+                mode="determinate"
+                [value]="getPlanProgress(plan)"
+                [color]="getProgressColor(plan)"
+                class="progress-bar"
+              ></mat-progress-bar>
+            </mat-panel-title>
+            <mat-panel-description class="panel-description">
+              <span class="book-title">{{ plan.libro.titulo }}</span>
+              <mat-icon class="plan-icon">{{ getPlanIcon(plan) }}</mat-icon>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
 
-     <mat-expansion-panel
-      (opened)="panelOpenState.set(true)"
-      (closed)="panelOpenState.set(false)"
-      class="p-0"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <span class="flex-shrink-0 text-sm">40%</span>
-          <mat-progress-bar
-            mode="determinate"
-            value="40"
-            class="flex-1"
-          ></mat-progress-bar>
-        </mat-panel-title>
-        <mat-panel-description class="flex justify-between text-sm">
-          Todos somos teólogos y el nombre mas largo
-          <mat-icon class="">book_ribbon</mat-icon>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <app-plan-card />
-    </mat-expansion-panel>
-  </mat-accordion>
+          <!-- Contenido del panel expandido -->
+          <app-plan-card
+            [plan]="plan"
+            (viewPlan)="onViewPlan($event)"
+            (editPlan)="onEditPlan($event)"
+            (completePlan)="onCompletePlan($event)"
+          />
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  }
 </div>

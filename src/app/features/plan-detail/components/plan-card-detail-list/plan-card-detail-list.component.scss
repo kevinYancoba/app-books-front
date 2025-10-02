@@ -1,0 +1,122 @@
+/* Estilos para el componente plan-card-detail-list */
+
+.plan-list-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Estados de carga y error */
+.loading-state,
+.error-state,
+.empty-state {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.loading-state mat-spinner {
+  margin-bottom: 16px;
+}
+
+.error-state mat-icon,
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+}
+
+.error-state mat-icon {
+  color: #f44336;
+}
+
+.empty-state mat-icon {
+  color: #9e9e9e;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .plan-list-container {
+    padding: 8px;
+  }
+  
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .loading-state,
+  .error-state,
+  .empty-state {
+    padding: 24px 16px;
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .plans-grid {
+    gap: 8px;
+  }
+  
+  .loading-state,
+  .error-state,
+  .empty-state {
+    padding: 16px;
+    min-height: 200px;
+  }
+  
+  .error-state mat-icon,
+  .empty-state mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Animaciones */
+.plans-grid {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para los botones de acción */
+.action-button {
+  margin-top: 16px;
+}
+
+/* Estilos para el texto de estado */
+.state-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.state-description {
+  color: #6b7280;
+  margin-bottom: 16px;
+  max-width: 400px;
+  line-height: 1.5;
+}

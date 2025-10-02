@@ -1,3 +1,46 @@
-<app-plan-card-detail />
-<app-plan-card-detail />
-<app-plan-card-detail />
+<div class="plan-list-container">
+  <!-- Estado de carga -->
+  @if (isLoading()) {
+  <div class="flex justify-center items-center p-8">
+    <mat-spinner diameter="50"></mat-spinner>
+    <span class="ml-4 text-gray-600">Cargando planes de lectura...</span>
+  </div>
+  }
+
+  <!-- Estado de error -->
+  @else if (error()) {
+  <div class="flex flex-col items-center justify-center p-8 text-center">
+    <mat-icon class="text-red-500 text-6xl mb-4">error_outline</mat-icon>
+    <h3 class="text-lg font-semibold text-gray-700 mb-2">Error al cargar planes</h3>
+    <p class="text-gray-500 mb-4">{{ error() }}</p>
+    <button mat-raised-button color="primary" (click)="refreshPlans()">
+      Reintentar
+    </button>
+  </div>
+  }
+
+  <!-- Lista de planes -->
+  @else if (hasPlans()) {
+  <div class="plans-grid">
+    @for (plan of plans(); track plan.id_plan) {
+    <app-plan-card-detail
+      [plan]="plan"
+      (planSelected)="onPlanSelected($event)"
+      (planCompleted)="onPlanCompleted($event)">
+    </app-plan-card-detail>
+    }
+  </div>
+  }
+
+  <!-- Estado vacío -->
+  @else {
+  <div class="flex flex-col items-center justify-center p-8 text-center">
+    <mat-icon class="text-gray-400 text-6xl mb-4">library_books</mat-icon>
+    <h3 class="text-lg font-semibold text-gray-700 mb-2">No tienes planes de lectura</h3>
+    <p class="text-gray-500 mb-4">Crea tu primer plan de lectura para comenzar</p>
+    <button mat-raised-button color="primary" (click)="refreshPlans()">
+      Actualizar
+    </button>
+  </div>
+  }
+</div>
