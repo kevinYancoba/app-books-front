@@ -1,32 +1,41 @@
-import { Component, inject, signal, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PlanCardDetailComponent } from "../plan-card-detail/plan-card-detail.component";
+import { PlanCardDetailComponent } from '../plan-card-detail/plan-card-detail.component';
 import { PlanDetailService } from '../../services/plan-detail.service';
 import {
   PlanWithDetails,
   PlanDetail,
-  MarkChaptersReadRequest
+  MarkChaptersReadRequest,
 } from '../../../plans/models/plan-model';
 
 @Component({
   selector: 'app-plan-card-detail-list',
   imports: [
     CommonModule,
-    MatListModule,
-    MatDividerModule,
+    MatExpansionModule,
     PlanCardDetailComponent,
     MatProgressSpinnerModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatBadgeModule,
+    MatChipsModule,
   ],
   templateUrl: './plan-card-detail-list.component.html',
-  styleUrl: './plan-card-detail-list.component.scss'
 })
 export class PlanCardDetailListComponent implements OnInit {
   // Inputs
@@ -79,10 +88,10 @@ export class PlanCardDetailListComponent implements OnInit {
         this.error.set('Error al cargar el plan');
         this.snackBar.open('Error al cargar los detalles del plan', 'Cerrar', {
           duration: 3000,
-          panelClass: ['error-snackbar']
+          panelClass: ['error-snackbar'],
         });
         console.error('Error al cargar plan:', error);
-      }
+      },
     });
   }
 
@@ -109,14 +118,14 @@ export class PlanCardDetailListComponent implements OnInit {
       detalleIds: [event.planDetail.id_detalle],
       tiempoRealMinutos: event.tiempoRealMinutos,
       dificultadPercibida: event.dificultadPercibida,
-      notas: event.notas
+      notas: event.notas,
     };
 
     this.planDetailService.markChaptersAsRead(this.planId, request).subscribe({
       next: (response) => {
         this.snackBar.open(response.mensaje, 'Cerrar', {
           duration: 3000,
-          panelClass: ['success-snackbar']
+          panelClass: ['success-snackbar'],
         });
 
         // Emitir evento para notificar al componente padre
@@ -128,10 +137,10 @@ export class PlanCardDetailListComponent implements OnInit {
       error: (error) => {
         this.snackBar.open('Error al marcar capítulo como leído', 'Cerrar', {
           duration: 3000,
-          panelClass: ['error-snackbar']
+          panelClass: ['error-snackbar'],
         });
         console.error('Error al marcar como leído:', error);
-      }
+      },
     });
   }
 
@@ -171,6 +180,50 @@ export class PlanCardDetailListComponent implements OnInit {
    */
   getPlanDays(): number[] {
     const detailsByDay = this.getPlanDetailsByDay();
-    return Object.keys(detailsByDay).map(day => parseInt(day)).sort((a, b) => a - b);
+    return Object.keys(detailsByDay)
+      .map((day) => parseInt(day))
+      .sort((a, b) => a - b);
   }
+
+
+  /**
+   * Obtiene el estado del día (completado, en progreso, pendiente, atrasado)
+   */
+  getDayStatus(
+    day: number
+  ): 'completed' | 'in-progress' | 'pending' | 'overdue' {
+    const details = this.getPlanDetailsByDay()[day] || [];
+
+    if (details.length === 0) return 'pending';
+
+    const allRead = details.every((d) => d.leido);
+    const someRead = details.some((d) => d.leido);
+    const anyOverdue = details.some((d) => d.es_atrasado);
+
+    if (allRead) return 'completed';
+    if (anyOverdue) return 'overdue';
+    if (someRead) return 'in-progress';
+    return 'pending';
+  }
+
+
+  /**
+   * Obtiene el texto del estado del día
+   */
+  getDayStatusText(day: number): string {
+    const status = this.getDayStatus(day);
+    switch (status) {
+      case 'completed':
+        return 'Completado';
+      case 'in-progress':
+        return 'En progreso';
+      case 'overdue':
+        return 'Atrasado';
+      case 'pending':
+        return 'Pendiente';
+      default:
+        return 'Pendiente';
+    }
+  }
+
 }

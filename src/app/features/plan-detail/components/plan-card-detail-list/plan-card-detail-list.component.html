@@ -1,18 +1,18 @@
 <div class="plan-details-container">
   <!-- Estado de carga -->
   @if (isLoading()) {
-  <div class="flex flex-col items-center justify-center p-8">
+  <div class="loading-state">
     <mat-spinner diameter="50"></mat-spinner>
-    <p class="mt-4 text-gray-600">Cargando detalles del plan...</p>
+    <p class="loading-text">Cargando detalles del plan...</p>
   </div>
   }
 
   <!-- Estado de error -->
   @else if (error()) {
-  <div class="flex flex-col items-center justify-center p-8 text-center">
-    <mat-icon class="text-red-500 text-6xl mb-4">error_outline</mat-icon>
-    <h3 class="text-lg font-semibold text-gray-700 mb-2">Error al cargar el plan</h3>
-    <p class="text-gray-500 mb-4">{{ error() }}</p>
+  <div class="error-state">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <h3 class="error-title">Error al cargar el plan</h3>
+    <p class="error-message">{{ error() }}</p>
     <button mat-raised-button color="primary" (click)="refreshPlan()">
       Reintentar
     </button>
@@ -24,44 +24,65 @@
   <div class="plan-content">
     <!-- Información general del plan -->
     @if (planWithDetails(); as plan) {
-    <div class="plan-header mb-6 p-4 bg-blue-50 rounded-lg">
-      <h2 class="text-xl font-bold text-blue-900 mb-2">{{ plan.titulo }}</h2>
-      <div class="flex justify-between items-center text-sm text-blue-700">
-        <span>{{ plan.libro.titulo }} - {{ plan.libro.autor }}</span>
-        <span>Progreso: {{ plan.progreso_porcentaje }}%</span>
+    <div class="plan-header">
+      <h2 class="plan-title">{{ plan.titulo }}</h2>
+      <div class="plan-info">
+        <span class="book-info"
+          >{{ plan.libro.titulo }} - {{ plan.libro.autor }}</span
+        >
+        <span class="progress-info"
+          >Progreso: {{ plan.progreso_porcentaje }}%</span
+        >
       </div>
     </div>
 
-    <!-- Lista de detalles agrupados por día -->
-    <div class="days-container">
+    <!-- Accordion de días -->
+    <mat-accordion class="days-accordion" multi>
       @for (day of getPlanDays(); track day) {
-      <div class="day-section mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
-          Día {{ day }}
-        </h3>
-        <div class="day-details grid gap-4">
+      <mat-expansion-panel class="day-panel">
+        <!-- Contenido del panel: lista de capítulos del día -->
+        <mat-expansion-panel-header class="day-panel-header">
+          <mat-panel-title>
+            <div class="flex justify-between items-center w-full">
+              <div class="flex items-center">
+                <mat-icon>brightness_5</mat-icon>
+                <span>&nbsp;Día {{ day }}</span>
+              </div>
+            </div>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="flex justify-end items-end w-full">
+              <mat-icon>book</mat-icon>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="mb-4">
           @for (detail of getPlanDetailsByDay()[day]; track detail.id_detalle) {
           <app-plan-card-detail
             [planDetail]="detail"
             [dayNumber]="day"
             (planDetailSelected)="onPlanDetailSelected($event)"
-            (markAsRead)="onMarkAsRead($event)">
+            (markAsRead)="onMarkAsRead($event)"
+          >
           </app-plan-card-detail>
           }
         </div>
-      </div>
+      </mat-expansion-panel>
       }
-    </div>
+    </mat-accordion>
     }
   </div>
   }
 
   <!-- Estado vacío -->
   @else {
-  <div class="flex flex-col items-center justify-center p-8 text-center">
-    <mat-icon class="text-gray-400 text-6xl mb-4">book</mat-icon>
-    <h3 class="text-lg font-semibold text-gray-700 mb-2">No hay detalles del plan</h3>
-    <p class="text-gray-500 mb-4">No se encontraron detalles para este plan de lectura</p>
+  <div class="empty-state">
+    <mat-icon class="empty-icon">book</mat-icon>
+    <h3 class="empty-title">No hay detalles del plan</h3>
+    <p class="empty-message">
+      No se encontraron detalles para este plan de lectura
+    </p>
     <button mat-raised-button color="primary" (click)="refreshPlan()">
       Actualizar
     </button>

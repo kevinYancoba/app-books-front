@@ -34,64 +34,9 @@
   </mat-card-header>
 
   <mat-card-content class="mt-4">
-    <!-- <div class="">
-      <div class="flex items-center">
-        <span class="text-sm font-medium">Páginas&nbsp;del&nbsp;libro</span>
-        <span class="text-sm text-gray-600">
-          &nbsp;{{ pageRange() }} ({{ detail.capitulo.paginas_estimadas }}
-          páginas)
-        </span>
-      </div>
-      <div class="flex items-center">
-        <span class="text-sm font-medium">Tiempo estimado</span>
-        <span class="text-sm text-gray-600">
-          &nbsp;{{ detail.tiempo_estimado_minutos }} minutos
-        </span>
-      </div>
-      <div class="flex items-center">
-        <span class="text-sm font-medium">Fecha asignada</span>
-        <span class="text-sm text-gray-600">
-          &nbsp;{{ formatDate(detail.fecha_asignada) }}
-        </span>
-      </div>
-    </div> -->
-
-     <mat-chip-set>
-        @if (detail.leido) {
-        <mat-chip color="primary">
-          <mat-icon matChipAvatar fontIcon="check_circle"></mat-icon>
-          Completado
-        </mat-chip>
-        } @else {
-        <mat-chip color="accent">
-          <mat-icon matChipAvatar fontIcon="schedule"></mat-icon>
-          Pendiente
-        </mat-chip>
-        } @if (isOverdue()) {
-        <mat-chip color="warn">
-          <mat-icon matChipAvatar fontIcon="warning"></mat-icon>
-          Atrasado
-        </mat-chip>
-        }
-
-
-         <mat-chip color="warn">
-          <mat-icon matChipAvatar fontIcon="numbers"></mat-icon>
-          {{ pageRange() }}&nbsp;pg
-        </mat-chip>
-         <mat-chip color="warn">
-          <mat-icon matChipAvatar fontIcon="access_time"></mat-icon>
-          {{ detail.tiempo_estimado_minutos }} minutos
-        </mat-chip>
-         <mat-chip color="warn">
-          <mat-icon matChipAvatar fontIcon="event_available"></mat-icon>
-          {{ formatDate(detail.fecha_asignada) }}
-        </mat-chip>
-      </mat-chip-set>
-
     <!-- Información adicional si está completado -->
     @if (detail.leido && detail.fecha_completado) {
-    <div class="completed-info mb-4 p-3 bg-green-50 rounded-lg">
+    <div class="completed-info mb-4 p-3  rounded-lg">
       <div class="text-sm font-medium text-green-800 mb-2">
         Información de lectura
       </div>
@@ -112,42 +57,40 @@
     </div>
     }
   </mat-card-content>
-  <!-- <mat-card-footer class="px-4 mt-4">
-    <div class="status-section mb-4">
-      <mat-chip-set>
-        @if (detail.leido) {
-        <mat-chip color="primary">
-          <mat-icon matChipAvatar fontIcon="check_circle"></mat-icon>
-          Completado
-        </mat-chip>
-        } @else {
-        <mat-chip color="accent">
-          <mat-icon matChipAvatar fontIcon="schedule"></mat-icon>
-          Pendiente
-        </mat-chip>
-        } @if (isOverdue()) {
-        <mat-chip color="warn">
-          <mat-icon matChipAvatar fontIcon="warning"></mat-icon>
-          Atrasado
-        </mat-chip>
-        }
 
+  <mat-card-footer class="mt-4 px-4">
+    <mat-chip-set>
+      @if (detail.leido) {
+      <mat-chip color="primary">
+        <mat-icon matChipAvatar fontIcon="check_circle"></mat-icon>
+        Completado
+      </mat-chip>
+      } @else {
+      <mat-chip color="accent">
+        <mat-icon matChipAvatar fontIcon="schedule"></mat-icon>
+        Pendiente
+      </mat-chip>
+      } @if (isOverdue()) {
+      <mat-chip color="warn">
+        <mat-icon matChipAvatar fontIcon="warning"></mat-icon>
+        Atrasado
+      </mat-chip>
+      }
 
-         <mat-chip color="warn">
-          <mat-icon matChipAvatar fontIcon="numbers"></mat-icon>
-          {{ pageRange() }}&nbsp;pg
-        </mat-chip>
-         <mat-chip color="warn">
-          <mat-icon matChipAvatar fontIcon="access_time"></mat-icon>
-          {{ detail.tiempo_estimado_minutos }} minutos
-        </mat-chip>
-         <mat-chip color="warn">
-          <mat-icon matChipAvatar fontIcon="event_available"></mat-icon>
-          {{ formatDate(detail.fecha_asignada) }}
-        </mat-chip>
-      </mat-chip-set>
-    </div>
-  </mat-card-footer> -->
+      <mat-chip color="warn">
+        <mat-icon matChipAvatar fontIcon="numbers"></mat-icon>
+        {{ pageRange() }}&nbsp;pg
+      </mat-chip>
+      <mat-chip color="warn">
+        <mat-icon matChipAvatar fontIcon="access_time"></mat-icon>
+        {{ detail.tiempo_estimado_minutos }} minutos
+      </mat-chip>
+      <mat-chip color="warn">
+        <mat-icon matChipAvatar fontIcon="event_available"></mat-icon>
+        {{ formatDate(detail.fecha_asignada) }}
+      </mat-chip>
+    </mat-chip-set>
+  </mat-card-footer>
   <mat-card-actions class="">
     @if (showReadForm()) {
     <div class="px-2 w-full">
