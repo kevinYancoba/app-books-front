@@ -6,9 +6,12 @@ import {
   Input,
   Output,
   EventEmitter,
+  ViewChildren,
+  QueryList,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,7 +25,7 @@ import {
   PlanDetail,
   MarkChaptersReadRequest,
 } from '../../../plans/models/plan-model';
-import { MatCard, MatCardModule } from "@angular/material/card";
+import { MatCardModule } from "@angular/material/card";
 import { MatProgressBar } from "@angular/material/progress-bar";
 
 @Component({
@@ -41,7 +44,7 @@ import { MatProgressBar } from "@angular/material/progress-bar";
 ],
   templateUrl: './plan-card-detail-list.component.html',
 })
-export class PlanCardDetailListComponent implements OnInit {
+export class PlanCardDetailListComponent implements OnInit, AfterViewInit {
   // Inputs
   @Input() planId: number | null = null;
 
@@ -54,6 +57,9 @@ export class PlanCardDetailListComponent implements OnInit {
     notas: string;
   }>();
 
+  // ViewChildren para acceder a los paneles de expansión
+  @ViewChildren(MatExpansionPanel) expansionPanels!: QueryList<MatExpansionPanel>;
+
   // Servicios inyectados
   private planDetailService = inject(PlanDetailService);
   private snackBar = inject(MatSnackBar);
@@ -63,10 +69,20 @@ export class PlanCardDetailListComponent implements OnInit {
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
 
+  // Signal para controlar qué panel está expandido
+  readonly expandedDay = signal<number | null>(null);
+
   ngOnInit(): void {
     if (this.planId) {
       this.loadPlanDetails();
     }
+  }
+
+  ngAfterViewInit(): void {
+    // Después de que la vista se inicialice, hacer scroll al panel expandido
+    setTimeout(() => {
+      this.scrollToExpandedPanel();
+    }, 300);
   }
 
   /**
@@ -86,6 +102,9 @@ export class PlanCardDetailListComponent implements OnInit {
         this.planWithDetails.set(plan);
         this.isLoading.set(false);
         console.log('Plan con detalles cargado:', plan);
+
+        // Establecer el día a expandir (el más próximo a hoy que no esté completado)
+        this.setInitialExpandedDay();
       },
       error: (error) => {
         this.isLoading.set(false);
@@ -229,6 +248,102 @@ export class PlanCardDetailListComponent implements OnInit {
         return 'Pendiente';
       default:
         return 'Pendiente';
+    }
+  }
+
+  /**
+   * Establece el día inicial a expandir basado en la fecha más próxima a hoy que no esté completada
+   */
+  private setInitialExpandedDay(): void {
+    const plan = this.planWithDetails();
+    if (!plan || !plan.detalleplanlectura.length) {
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Encontrar el día más próximo a hoy que no esté completado
+    let closestDay: number | null = null;
+    let minDifference = Infinity;
+
+    const detailsByDay = this.getPlanDetailsByDay();
+    const days = this.getPlanDays();
+
+    for (const day of days) {
+      const details = detailsByDay[day];
+      const allRead = details.every((d) => d.leido);
+
+      // Si el día no está completado
+      if (!allRead && details.length > 0) {
+        // Obtener la fecha asignada del primer detalle del día
+        const firstDetail = details[0];
+        const assignedDate = new Date(firstDetail.fecha_asignada);
+        assignedDate.setHours(0, 0, 0, 0);
+
+        // Calcular la diferencia en días
+        const difference = Math.abs(assignedDate.getTime() - today.getTime());
+
+        if (difference < minDifference) {
+          minDifference = difference;
+          closestDay = day;
+        }
+      }
+    }
+
+    // Si no se encontró ningún día incompleto, expandir el primer día
+    if (closestDay === null && days.length > 0) {
+      closestDay = days[0];
+    }
+
+    this.expandedDay.set(closestDay);
+  }
+
+  /**
+   * Maneja la apertura/cierre de un panel
+   */
+  togglePanel(day: number, isOpen: boolean): void {
+    if (isOpen) {
+      // Solo permitir un panel abierto a la vez
+      this.expandedDay.set(day);
+    } else {
+      // Si se cierra el panel actual, limpiar el estado
+      if (this.expandedDay() === day) {
+        this.expandedDay.set(null);
+      }
+    }
+  }
+
+  /**
+   * Verifica si un día específico está expandido
+   */
+  isDayExpanded(day: number): boolean {
+    return this.expandedDay() === day;
+  }
+
+  /**
+   * Hace scroll al panel expandido
+   */
+  private scrollToExpandedPanel(): void {
+    const expandedDay = this.expandedDay();
+    if (expandedDay === null) return;
+
+    const panels = this.expansionPanels?.toArray();
+    if (!panels || panels.length === 0) return;
+
+    const days = this.getPlanDays();
+    const expandedIndex = days.indexOf(expandedDay);
+
+    if (expandedIndex >= 0 && expandedIndex < panels.length) {
+      const panel = panels[expandedIndex];
+      const element = (panel as any)._body?.nativeElement?.parentElement;
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
     }
   }
 
