@@ -26,6 +26,7 @@
 
   <mat-card-content class="mt-4">
     <!-- Estadísticas en grid -->
+    @if (currentPlan.estadisticas) {
     <div class="stats-grid">
       <div class="flex justify-start">
         <div class="">
@@ -48,6 +49,7 @@
         <div class="stat-label">&nbsp;días para terminar de leer tu libro.</div>
       </div>
     </div>
+    }
 
     <!-- Fechas del plan -->
     <div class="flex justify-start">
@@ -86,10 +88,12 @@
     <div class="my-4">
       <div class="flex justify-between">
         <span class="progress-text">{{ progressPercentage() }}%</span>
+        @if (currentPlan.estadisticas) {
         <span class="pages-info">
           {{ currentPlan.estadisticas.paginasLeidas }} /
           {{ currentPlan.estadisticas.totalPaginas }} pg
         </span>
+        }
       </div>
       <mat-progress-bar
         mode="determinate"

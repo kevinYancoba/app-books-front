@@ -86,18 +86,39 @@ export class EditPlanComponent implements OnInit {
     this.isLoading.set(true);
 
     const formValue = this.editPlanForm.value;
-    const updateRequest: UpdatePlanRequest = {
-      titulo: formValue.titulo,
-      descripcion: formValue.descripcion || null,
-      fechaFin: this.formatDateForBackend(formValue.fechaFin),
-      incluirFinesSemana: formValue.incluirFinesSemana,
-      paginasPorDia: formValue.paginasPorDia || null,
-      tiempoEstimadoDia: formValue.tiempoEstimadoDia || null
-    };
+
+    // Construir el request solo con los campos que tienen valor
+    const updateRequest: UpdatePlanRequest = {};
+
+    if (formValue.titulo) {
+      updateRequest.titulo = formValue.titulo;
+    }
+
+    if (formValue.descripcion) {
+      updateRequest.descripcion = formValue.descripcion;
+    }
+
+    if (formValue.fechaFin) {
+      updateRequest.fechaFin = this.formatDateForBackend(formValue.fechaFin);
+    }
+
+    // Boolean siempre se envía
+    updateRequest.incluirFinesSemana = formValue.incluirFinesSemana;
+
+    if (formValue.paginasPorDia) {
+      updateRequest.paginasPorDia = formValue.paginasPorDia;
+    }
+
+    if (formValue.tiempoEstimadoDia) {
+      updateRequest.tiempoEstimadoDia = formValue.tiempoEstimadoDia;
+    }
+
+    console.log('Enviando actualización de plan:', updateRequest);
 
     this.planService.updatePlan(this.plan().id_plan, updateRequest).subscribe({
       next: (updatedPlan) => {
         this.isLoading.set(false);
+        console.log('Plan actualizado:', updatedPlan);
         this.snackBar.open('Plan actualizado exitosamente', 'Cerrar', {
           duration: 3000,
           panelClass: ['success-snackbar']

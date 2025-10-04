@@ -19,7 +19,7 @@ export interface Plan {
   titulo: string;
   updated_at: string | null;
   libro: BookInfo;
-  estadisticas: PlanStatistics;
+  estadisticas?: PlanStatistics; // Opcional porque no siempre viene en todas las respuestas
 }
 
 export interface BookInfo {

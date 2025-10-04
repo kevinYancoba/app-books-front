@@ -103,15 +103,22 @@ export class PlanService {
     this.setLoading(true);
     this.clearError();
 
+    console.log('PlanService - Actualizando plan:', planId, planData);
+
     return this.baseHttp.put<ApiResponse<Plan>>(
       `/plan/${planId}`,
       planData
     ).pipe(
-      map(response => response.data),
-      tap(() => {
+      map(response => {
+        console.log('PlanService - Respuesta del servidor:', response);
+        return response.data;
+      }),
+      tap((plan) => {
         this.setLoading(false);
+        console.log('PlanService - Plan actualizado exitosamente:', plan);
       }),
       catchError(error => {
+        console.error('PlanService - Error al actualizar:', error);
         this.handleError('Error al actualizar el plan');
         return throwError(() => error);
       })
