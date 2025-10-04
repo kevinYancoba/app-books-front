@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { BaseHttpService } from '../../../core/services/base-http.service';
-import { CreatePlanRequest, CreatePlanResponse, Plan } from '../models/plan-model';
+import { CreatePlanRequest, CreatePlanResponse, Plan, UpdatePlanRequest } from '../models/plan-model';
 import { ApiResponse } from '../../../auth/interfaces';
 
 @Injectable({
@@ -10,15 +10,12 @@ import { ApiResponse } from '../../../auth/interfaces';
 })
 export class PlanService {
 
-  // Signal para el estado de carga
   private _isLoading = signal<boolean>(false);
   public readonly isLoading = this._isLoading.asReadonly();
 
-  // Signal para errores
   private _error = signal<string | null>(null);
   public readonly error = this._error.asReadonly();
 
-  // Signal para el último plan creado
   private _lastCreatedPlan = signal<Plan | null>(null);
   public readonly lastCreatedPlan = this._lastCreatedPlan.asReadonly();
 
@@ -102,7 +99,7 @@ export class PlanService {
    * @param planData - Datos actualizados del plan
    * @returns Observable con el plan actualizado
    */
-  updatePlan(planId: number, planData: Partial<CreatePlanRequest>): Observable<Plan> {
+  updatePlan(planId: number, planData: UpdatePlanRequest): Observable<Plan> {
     this.setLoading(true);
     this.clearError();
 

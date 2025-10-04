@@ -123,15 +123,13 @@ export class PlanCardDetailListComponent implements OnInit {
 
     this.planDetailService.markChaptersAsRead(this.planId, request).subscribe({
       next: (response) => {
-        this.snackBar.open(response.mensaje, 'Cerrar', {
+        this.snackBar.open(response.data.mensaje, 'Cerrar', {
           duration: 3000,
           panelClass: ['success-snackbar'],
         });
 
-        // Emitir evento para notificar al componente padre
         this.chapterMarkedAsRead.emit(event);
 
-        // Recargar los detalles del plan para mostrar los cambios
         this.loadPlanDetails();
       },
       error: (error) => {
@@ -142,6 +140,10 @@ export class PlanCardDetailListComponent implements OnInit {
         console.error('Error al marcar como leído:', error);
       },
     });
+  }
+
+  roundProgress(progress : number) : number {
+    return Math.round(progress);
   }
 
   /**

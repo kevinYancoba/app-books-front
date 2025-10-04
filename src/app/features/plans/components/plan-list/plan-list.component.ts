@@ -24,24 +24,25 @@ import { Plan } from '../../models/plan-model';
   styleUrl: './plan-list.component.scss'
 })
 export class PlanListComponent {
-  // Inputs
   plans = input<Plan[]>([]);
   isLoading = input<boolean>(false);
   error = input<string | null>(null);
 
-  // Outputs
   planView = output<Plan>();
   planEdit = output<Plan>();
   planComplete = output<Plan>();
   refreshPlans = output<void>();
 
-  // Signals para el estado de los paneles
   readonly panelStates = signal<{ [key: number]: boolean }>({});
 
-  // Computed para verificar si hay planes
   hasPlans = computed(() => this.plans().length > 0);
 
   constructor(private snackBar: MatSnackBar) {}
+
+
+  roundProgress(progress : number) : number {
+    return Math.round(progress);
+  }
 
   /**
    * Maneja la apertura/cierre de un panel
@@ -105,7 +106,7 @@ export class PlanListComponent {
    * Obtiene el progreso de un plan
    */
   getPlanProgress(plan: Plan): number {
-    return plan.progreso_porcentaje || 0;
+    return Math.round(plan.progreso_porcentaje) || 0;
   }
 
   /**

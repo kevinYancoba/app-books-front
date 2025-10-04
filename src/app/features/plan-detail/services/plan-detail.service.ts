@@ -67,7 +67,6 @@ export class PlanDetailService {
         this.setLoading(false);
         console.log('Capítulos marcados como leídos:', response);
 
-        // Actualizar el plan actual si existe
         const currentPlan = this.currentPlan();
         if (currentPlan) {
           this.updatePlanProgress(currentPlan, response);
@@ -87,15 +86,13 @@ export class PlanDetailService {
     plan: PlanWithDetails,
     response: MarkChaptersReadResponse
   ): void {
-    // Actualizar el progreso del plan
     const updatedPlan = {
       ...plan,
-      progreso_porcentaje: response.nuevoProgreso
+      progreso_porcentaje: response.data.nuevoProgreso
     };
 
-    // Actualizar los detalles marcados como leídos
     updatedPlan.detalleplanlectura = plan.detalleplanlectura.map(detalle => {
-      const updatedDetail = response.detallesActualizados.find(
+      const updatedDetail = response.data.detallesActualizados.find(
         updated => updated.id_detalle === detalle.id_detalle
       );
 

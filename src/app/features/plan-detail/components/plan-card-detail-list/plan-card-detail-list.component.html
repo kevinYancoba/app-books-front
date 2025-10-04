@@ -31,7 +31,7 @@
           >{{ plan.libro.titulo }} - {{ plan.libro.autor }}</span
         >
         <span class="progress-info"
-          >Progreso: {{ plan.progreso_porcentaje }}%</span
+          >Progreso: {{ roundProgress(plan.progreso_porcentaje) }}%</span
         >
       </div>
     </div>

@@ -1,15 +1,22 @@
-import { Component, Input, Output, EventEmitter, computed, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  computed,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from "@angular/material/card";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { FormsModule } from "@angular/forms";
-import { MatIconModule } from "@angular/material/icon";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { MatChipsModule } from "@angular/material/chips";
-import { MatButtonModule } from "@angular/material/button";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatSliderModule } from "@angular/material/slider";
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSliderModule } from '@angular/material/slider';
 import { PlanDetail } from '../../../plans/models/plan-model';
 
 @Component({
@@ -25,10 +32,10 @@ import { PlanDetail } from '../../../plans/models/plan-model';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSliderModule
+    MatSliderModule,
   ],
   templateUrl: './plan-card-detail.component.html',
-  styleUrl: './plan-card-detail.component.scss'
+  styleUrl: './plan-card-detail.component.scss',
 })
 export class PlanCardDetailComponent {
   @Input({ required: true }) planDetail!: PlanDetail;
@@ -41,14 +48,12 @@ export class PlanCardDetailComponent {
     notas: string;
   }>();
 
-  // Signals para el formulario de marcar como leído
   isCompleted = signal<boolean>(false);
   tiempoReal = signal<number>(0);
   dificultad = signal<number>(1);
   notas = signal<string>('');
   showReadForm = signal<boolean>(false);
 
-  // Computed signals para datos derivados
   isOverdue = computed(() => {
     return this.planDetail?.es_atrasado || false;
   });
@@ -63,6 +68,11 @@ export class PlanCardDetailComponent {
     if (!this.planDetail) return '';
     return `${this.planDetail.pagina_inicio} - ${this.planDetail.pagina_fin}`;
   });
+
+
+  roundProgress(progress: number): number {
+    return Math.round(progress);
+  }
 
   /**
    * Maneja el clic en la tarjeta para seleccionar el detalle del plan
@@ -93,7 +103,7 @@ export class PlanCardDetailComponent {
         planDetail: this.planDetail,
         tiempoRealMinutos: this.tiempoReal(),
         dificultadPercibida: this.dificultad(),
-        notas: this.notas()
+        notas: this.notas(),
       });
       this.showReadForm.set(false);
       this.resetForm();
@@ -138,7 +148,7 @@ export class PlanCardDetailComponent {
     return new Date(dateString).toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
   }
 

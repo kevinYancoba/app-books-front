@@ -55,6 +55,16 @@ export interface CreatePlanResponse {
   plan: Plan;
 }
 
+// Request para actualizar un plan
+export interface UpdatePlanRequest {
+  titulo?: string;
+  descripcion?: string;
+  fechaFin?: string;
+  incluirFinesSemana?: boolean;
+  paginasPorDia?: number;
+  tiempoEstimadoDia?: number;
+}
+
 // Interfaces para plan detallado con capítulos
 export interface PlanWithDetails extends Plan {
   detalleplanlectura: PlanDetail[];
@@ -97,6 +107,12 @@ export interface MarkChaptersReadRequest {
 
 // Response al marcar capítulos como leídos
 export interface MarkChaptersReadResponse {
+  statusCode: number;
+  message: string;
+  data: MarkChaptersReadData;
+}
+
+export interface MarkChaptersReadData {
   mensaje: string;
   capitulosMarcados: number;
   nuevoProgreso: number;
@@ -108,6 +124,7 @@ export interface UpdatedDetail {
   leido: boolean;
   fecha_completado: string;
   tiempo_real_minutos: number;
+  notas?: string;
 }
 
 // Alias para compatibilidad con plan-detail

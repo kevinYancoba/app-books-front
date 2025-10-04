@@ -2,8 +2,10 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { PlanListComponent } from "../../components/plan-list/plan-list.component";
 import { MainButtonComponent } from "../../components/main-button/main-button.component";
+import { EditPlanComponent } from "../../components/edit-plan/edit-plan.component";
 import { PlanService } from '../../services/plan.service';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { Plan } from '../../models/plan-model';
@@ -24,6 +26,7 @@ export class HomePlansComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   // Signals para el estado
   plans = signal<Plan[]>([]);
@@ -88,10 +91,24 @@ export class HomePlansComponent implements OnInit {
    */
   onPlanEdit(plan: Plan): void {
     console.log('Editar plan:', plan);
-    // TODO: Abrir modal de edición o navegar a página de edición
-    this.snackBar.open(`Editando plan "${plan.libro.titulo}"`, 'Cerrar', {
-      duration: 2000,
-      panelClass: ['info-snackbar']
+
+    const dialogRef = this.dialog.open(EditPlanComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      data: { plan },
+      disableClose: false,
+      autoFocus: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // El plan fue actualizado, recargar la lista
+        this.snackBar.open(`Plan "${result.titulo}" actualizado exitosamente`, 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        this.loadUserPlans();
+      }
     });
   }
 
