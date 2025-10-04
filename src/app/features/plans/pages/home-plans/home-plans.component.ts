@@ -125,6 +125,64 @@ export class HomePlansComponent implements OnInit {
   }
 
   /**
+   * Maneja la eliminación de un plan
+   */
+  onPlanDelete(plan: Plan): void {
+    console.log('Eliminar plan:', plan);
+
+    // Mostrar diálogo de confirmación usando MatSnackBar con acción
+    const snackBarRef = this.snackBar.open(
+      `¿Estás seguro de eliminar el plan "${plan.titulo}"?`,
+      'Eliminar',
+      {
+        duration: 5000,
+        panelClass: ['warn-snackbar'],
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      }
+    );
+
+    snackBarRef.onAction().subscribe(() => {
+      this.deletePlan(plan);
+    });
+  }
+
+  /**
+   * Elimina un plan
+   */
+  private deletePlan(plan: Plan): void {
+    this.isLoading.set(true);
+
+    this.planService.deletePlan(plan.id_plan).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.snackBar.open(
+          `Plan "${plan.titulo}" eliminado exitosamente`,
+          'Cerrar',
+          {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          }
+        );
+        // Recargar la lista de planes
+        this.loadUserPlans();
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        console.error('Error al eliminar plan:', error);
+        this.snackBar.open(
+          'Error al eliminar el plan. Por favor, intenta de nuevo.',
+          'Cerrar',
+          {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          }
+        );
+      }
+    });
+  }
+
+  /**
    * Maneja la actualización de la lista de planes
    */
   onRefreshPlans(): void {

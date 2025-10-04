@@ -31,6 +31,7 @@ export class PlanListComponent {
   planView = output<Plan>();
   planEdit = output<Plan>();
   planComplete = output<Plan>();
+  planDelete = output<Plan>();
   refreshPlans = output<void>();
 
   readonly panelStates = signal<{ [key: number]: boolean }>({});
@@ -93,6 +94,13 @@ export class PlanListComponent {
       duration: 2000,
       panelClass: ['success-snackbar']
     });
+  }
+
+  /**
+   * Maneja la eliminación de un plan
+   */
+  onDeletePlan(plan: Plan): void {
+    this.planDelete.emit(plan);
   }
 
   /**

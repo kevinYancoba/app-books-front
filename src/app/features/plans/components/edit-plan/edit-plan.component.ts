@@ -30,7 +30,6 @@ import { Plan, UpdatePlanRequest } from '../../models/plan-model';
     MatProgressSpinnerModule
   ],
   templateUrl: './edit-plan.component.html',
-  styleUrl: './edit-plan.component.css'
 })
 export class EditPlanComponent implements OnInit {
   // Inyección de dependencias

@@ -134,14 +134,21 @@ export class PlanService {
     this.setLoading(true);
     this.clearError();
 
+    console.log('PlanService - Eliminando plan:', planId);
+
     return this.baseHttp.delete<ApiResponse<any>>(
       `/plan/${planId}`
     ).pipe(
-      map(response => response.data),
+      map(response => {
+        console.log('PlanService - Respuesta de eliminación:', response);
+        return response.data;
+      }),
       tap(() => {
         this.setLoading(false);
+        console.log('PlanService - Plan eliminado exitosamente');
       }),
       catchError(error => {
+        console.error('PlanService - Error al eliminar:', error);
         this.handleError('Error al eliminar el plan');
         return throwError(() => error);
       })

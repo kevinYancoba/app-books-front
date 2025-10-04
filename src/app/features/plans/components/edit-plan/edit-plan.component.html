@@ -5,16 +5,13 @@
       <mat-icon class="text-primary">edit</mat-icon>
       Editar Plan de Lectura
     </h2>
-    <button mat-icon-button (click)="onCancel()" class="close-button">
-      <mat-icon>close</mat-icon>
-    </button>
   </div>
 
   <!-- Content -->
   <mat-dialog-content class="dialog-content">
     <form [formGroup]="editPlanForm" class="edit-plan-form">
       <!-- Información del libro (solo lectura) -->
-      <div class="book-info-section">
+      <div class="mt-4">
         <div class="flex items-center gap-3 mb-4">
           <mat-icon class="text-4xl text-primary">menu_book</mat-icon>
           <div>
@@ -25,17 +22,21 @@
       </div>
 
       <!-- Título del plan -->
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full mt-4">
         <mat-label>Título del Plan</mat-label>
         <input
           matInput
           formControlName="titulo"
           placeholder="Ej: Mi plan de lectura de verano"
-          maxlength="100">
-        <mat-icon matPrefix>title</mat-icon>
-        <mat-hint align="end">{{ editPlanForm.get('titulo')?.value?.length || 0 }}/100</mat-hint>
-        @if (editPlanForm.get('titulo')?.invalid && editPlanForm.get('titulo')?.touched) {
-          <mat-error>{{ getErrorMessage('titulo') }}</mat-error>
+          maxlength="100"
+        />
+        <mat-icon matSuffix>title</mat-icon>
+        <mat-hint align="end"
+          >{{ editPlanForm.get("titulo")?.value?.length || 0 }}/100</mat-hint
+        >
+        @if (editPlanForm.get('titulo')?.invalid &&
+        editPlanForm.get('titulo')?.touched) {
+        <mat-error>{{ getErrorMessage("titulo") }}</mat-error>
         }
       </mat-form-field>
 
@@ -47,16 +48,21 @@
           formControlName="descripcion"
           placeholder="Describe tu plan de lectura..."
           rows="3"
-          maxlength="500">
+          maxlength="500"
+        >
         </textarea>
-        <mat-icon matPrefix>description</mat-icon>
-        <mat-hint align="end">{{ editPlanForm.get('descripcion')?.value?.length || 0 }}/500</mat-hint>
-        @if (editPlanForm.get('descripcion')?.invalid && editPlanForm.get('descripcion')?.touched) {
-          <mat-error>{{ getErrorMessage('descripcion') }}</mat-error>
+        <mat-icon matSuffix>description</mat-icon>
+        <mat-hint align="end"
+          >{{
+            editPlanForm.get("descripcion")?.value?.length || 0
+          }}/500</mat-hint
+        >
+        @if (editPlanForm.get('descripcion')?.invalid &&
+        editPlanForm.get('descripcion')?.touched) {
+        <mat-error>{{ getErrorMessage("descripcion") }}</mat-error>
         }
       </mat-form-field>
 
-      <!-- Fecha de finalización -->
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Fecha de Finalización</mat-label>
         <input
@@ -64,12 +70,13 @@
           [matDatepicker]="picker"
           formControlName="fechaFin"
           [min]="minDate"
-          placeholder="Selecciona una fecha">
-        <mat-icon matPrefix>event</mat-icon>
+          placeholder="Selecciona una fecha"
+        />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
-        @if (editPlanForm.get('fechaFin')?.invalid && editPlanForm.get('fechaFin')?.touched) {
-          <mat-error>{{ getErrorMessage('fechaFin') }}</mat-error>
+        @if (editPlanForm.get('fechaFin')?.invalid &&
+        editPlanForm.get('fechaFin')?.touched) {
+        <mat-error>{{ getErrorMessage("fechaFin") }}</mat-error>
         }
       </mat-form-field>
 
@@ -84,11 +91,13 @@
             formControlName="paginasPorDia"
             placeholder="Ej: 10"
             min="1"
-            max="500">
-          <mat-icon matPrefix>auto_stories</mat-icon>
+            max="500"
+          />
+          <mat-icon matSuffix>auto_stories</mat-icon>
           <mat-hint>Páginas a leer diariamente</mat-hint>
-          @if (editPlanForm.get('paginasPorDia')?.invalid && editPlanForm.get('paginasPorDia')?.touched) {
-            <mat-error>{{ getErrorMessage('paginasPorDia') }}</mat-error>
+          @if (editPlanForm.get('paginasPorDia')?.invalid &&
+          editPlanForm.get('paginasPorDia')?.touched) {
+          <mat-error>{{ getErrorMessage("paginasPorDia") }}</mat-error>
           }
         </mat-form-field>
 
@@ -101,60 +110,56 @@
             formControlName="tiempoEstimadoDia"
             placeholder="Ej: 60"
             min="1"
-            max="1440">
-          <mat-icon matPrefix>schedule</mat-icon>
+            max="1440"
+          />
           <mat-hint>Minutos de lectura diaria</mat-hint>
-          @if (editPlanForm.get('tiempoEstimadoDia')?.invalid && editPlanForm.get('tiempoEstimadoDia')?.touched) {
-            <mat-error>{{ getErrorMessage('tiempoEstimadoDia') }}</mat-error>
+          @if (editPlanForm.get('tiempoEstimadoDia')?.invalid &&
+          editPlanForm.get('tiempoEstimadoDia')?.touched) {
+          <mat-error>{{ getErrorMessage("tiempoEstimadoDia") }}</mat-error>
           }
         </mat-form-field>
       </div>
 
       <!-- Incluir fines de semana -->
-      <div class="toggle-section">
-        <mat-slide-toggle
-          formControlName="incluirFinesSemana"
-          color="primary">
+      <div class="toggle-section mt-4">
+        <mat-slide-toggle formControlName="incluirFinesSemana" color="primary">
           <div class="flex items-center gap-2">
-            <mat-icon>weekend</mat-icon>
             <span>Incluir fines de semana en el plan</span>
           </div>
         </mat-slide-toggle>
       </div>
 
       <!-- Información adicional -->
-      <div class="info-section">
-        <div class="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
-          <mat-icon class="text-blue-600">info</mat-icon>
-          <div class="text-sm text-blue-800">
+      <div class="mt-4">
+        <div class="flex items-start gap-2 p-3">
+          <mat-icon>info</mat-icon>
+          <div class="text-xs">
             <p class="font-semibold mb-1">Nota importante:</p>
-            <p>Los cambios en las páginas por día y tiempo estimado afectarán la planificación futura del plan de lectura.</p>
+            <p>
+              Los cambios en las páginas por día y tiempo estimado afectarán la
+              planificación futura del plan de lectura.
+            </p>
           </div>
         </div>
       </div>
     </form>
   </mat-dialog-content>
 
-  <!-- Actions -->
   <mat-dialog-actions align="end" class="dialog-actions">
-    <button
-      mat-button
-      (click)="onCancel()"
-      [disabled]="isLoading()">
+    <button mat-button (click)="onCancel()" [disabled]="isLoading()">
       Cancelar
     </button>
     <button
-      mat-raised-button
+      mat-flat-button
       color="primary"
       (click)="onSubmit()"
-      [disabled]="editPlanForm.invalid || isLoading()">
+      [disabled]="editPlanForm.invalid || isLoading()"
+    >
       @if (isLoading()) {
-        <mat-spinner diameter="20" class="inline-block mr-2"></mat-spinner>
-      }
-      @if (!isLoading()) {
-        <mat-icon>save</mat-icon>
-      }
-      Guardar Cambios
+      <mat-spinner diameter="20" class="inline-block mr-2"></mat-spinner>
+      } @if (!isLoading()) {
+      <mat-icon>save</mat-icon>
+      } Guardar Cambios
     </button>
   </mat-dialog-actions>
 </div>

@@ -7,7 +7,7 @@
     alt="Photo of a Shiba Inu"
     class="h-48 w-full object-cover"
   />
-  <mat-card-header >
+  <mat-card-header>
     <div class="flex w-full justify-between items-center">
       <div>
         <mat-card-title class="">
@@ -17,10 +17,22 @@
           por {{ currentPlan.libro.autor }}
         </mat-card-subtitle>
       </div>
-
-      <button mat-icon-button (click)="onEdit(currentPlan)" color="primary">
-        <mat-icon>edit</mat-icon>
-      </button>
+      <div class="flex gap-1">
+        <button
+          mat-icon-button
+          (click)="onEdit(currentPlan)"
+          color="primary"
+          matTooltip="Editar plan">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          (click)="onDelete(currentPlan)"
+          color="warn"
+          matTooltip="Eliminar plan">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
     </div>
   </mat-card-header>
 

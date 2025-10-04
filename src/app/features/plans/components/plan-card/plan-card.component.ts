@@ -6,6 +6,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Plan } from '../../models/plan-model';
 
 
@@ -19,6 +20,7 @@ import { Plan } from '../../models/plan-model';
     MatIconModule,
     MatChipsModule,
     MatBadgeModule,
+    MatTooltipModule,
   ],
   templateUrl: './plan-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +36,7 @@ export class PlanCardComponent {
   viewPlan = output<Plan>();
   editPlan = output<Plan>();
   completePlan = output<Plan>();
+  deletePlan = output<Plan>();
 
   // Computed signals para datos derivados
   progressPercentage = computed(() => {
@@ -74,6 +77,10 @@ export class PlanCardComponent {
 
   onComplete(p: Plan) {
     this.completePlan.emit(p);
+  }
+
+  onDelete(p: Plan) {
+    this.deletePlan.emit(p);
   }
 
   /**
