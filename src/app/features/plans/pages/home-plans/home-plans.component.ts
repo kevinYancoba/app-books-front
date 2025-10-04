@@ -183,6 +183,23 @@ export class HomePlansComponent implements OnInit {
   }
 
   /**
+   * Maneja la creación de un nuevo plan
+   */
+  onPlanCreated(plan: any): void {
+    console.log('Plan creado:', plan);
+    this.snackBar.open(
+      'Plan de lectura creado exitosamente',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      }
+    );
+    // Recargar la lista de planes
+    this.loadUserPlans();
+  }
+
+  /**
    * Maneja la actualización de la lista de planes
    */
   onRefreshPlans(): void {

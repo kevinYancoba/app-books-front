@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PlanCardComponent } from "../plan-card/plan-card.component";
+import { PlanCardComponent } from '../plan-card/plan-card.component';
 import { Plan } from '../../models/plan-model';
 
 @Component({
@@ -18,10 +18,10 @@ import { Plan } from '../../models/plan-model';
     MatProgressBarModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './plan-list.component.html',
-  styleUrl: './plan-list.component.scss'
+  styleUrl: './plan-list.component.scss',
 })
 export class PlanListComponent {
   plans = input<Plan[]>([]);
@@ -40,8 +40,7 @@ export class PlanListComponent {
 
   constructor(private snackBar: MatSnackBar) {}
 
-
-  roundProgress(progress : number) : number {
+  roundProgress(progress: number): number {
     return Math.round(progress);
   }
 
@@ -52,7 +51,7 @@ export class PlanListComponent {
     const currentStates = this.panelStates();
     this.panelStates.set({
       ...currentStates,
-      [planId]: isOpen
+      [planId]: isOpen,
     });
   }
 
@@ -70,7 +69,7 @@ export class PlanListComponent {
     this.planView.emit(plan);
     this.snackBar.open(`Abriendo plan "${plan.libro.titulo}"`, 'Cerrar', {
       duration: 2000,
-      panelClass: ['success-snackbar']
+      panelClass: ['success-snackbar'],
     });
   }
 
@@ -81,7 +80,7 @@ export class PlanListComponent {
     this.planEdit.emit(plan);
     this.snackBar.open(`Editando plan "${plan.libro.titulo}"`, 'Cerrar', {
       duration: 2000,
-      panelClass: ['info-snackbar']
+      panelClass: ['info-snackbar'],
     });
   }
 
@@ -90,10 +89,14 @@ export class PlanListComponent {
    */
   onCompletePlan(plan: Plan): void {
     this.planComplete.emit(plan);
-    this.snackBar.open(`Plan "${plan.libro.titulo}" marcado como completado`, 'Cerrar', {
-      duration: 2000,
-      panelClass: ['success-snackbar']
-    });
+    this.snackBar.open(
+      `Plan "${plan.libro.titulo}" marcado como completado`,
+      'Cerrar',
+      {
+        duration: 2000,
+        panelClass: ['success-snackbar'],
+      }
+    );
   }
 
   /**
@@ -110,6 +113,7 @@ export class PlanListComponent {
     this.refreshPlans.emit();
   }
 
+
   /**
    * Obtiene el progreso de un plan
    */
@@ -123,7 +127,7 @@ export class PlanListComponent {
   getPlanIcon(plan: Plan): string {
     switch (plan.estado) {
       case 'ACTIVO':
-        return 'auto_stories';
+        return 'play_circle';
       case 'COMPLETADO':
         return 'check_circle';
       case 'PAUSADO':

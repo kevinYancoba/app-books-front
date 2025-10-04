@@ -18,6 +18,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogRef } from '@angular/material/dialog';
 import {
   MatTimepickerModule,
   MatTimepickerOption,
@@ -26,6 +27,7 @@ import { AuthService } from '../../../../auth/services/auth.service';
 import { PlanService } from '../../../plans/services/plan.service';
 import { CreatePlanRequest } from '../../../plans/models/plan-model';
 import { ImageCompressionUtil } from '../../../../core/utils/image-compression.util';
+import { PlanDialogComponent } from '../plan-dialog/plan-dialog.component';
 
 @Component({
   selector: 'app-plan-stepper',
@@ -51,6 +53,7 @@ export class PlanStepperComponent {
   private authService = inject(AuthService);
   public planService = inject(PlanService);
   private snackBar = inject(MatSnackBar);
+  private dialogRef = inject(MatDialogRef<PlanDialogComponent>, { optional: true });
 
   nivelLectura = signal([
     { value: 'novato', viewValue: 'Novato' },
@@ -265,6 +268,11 @@ export class PlanStepperComponent {
         });
         this.resetForm();
         console.log('Plan creado:', response);
+
+        // Cerrar el diálogo y pasar el plan creado como resultado
+        if (this.dialogRef) {
+          this.dialogRef.close(response.plan);
+        }
       },
       error: (error) => {
         this.snackBar.open('Error al crear el plan de lectura', 'Cerrar', {

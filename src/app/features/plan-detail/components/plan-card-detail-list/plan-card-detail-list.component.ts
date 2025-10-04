@@ -22,6 +22,8 @@ import {
   PlanDetail,
   MarkChaptersReadRequest,
 } from '../../../plans/models/plan-model';
+import { MatCard, MatCardModule } from "@angular/material/card";
+import { MatProgressBar } from "@angular/material/progress-bar";
 
 @Component({
   selector: 'app-plan-card-detail-list',
@@ -34,7 +36,9 @@ import {
     MatButtonModule,
     MatBadgeModule,
     MatChipsModule,
-  ],
+    MatCardModule,
+    MatProgressBar
+],
   templateUrl: './plan-card-detail-list.component.html',
 })
 export class PlanCardDetailListComponent implements OnInit {

@@ -1,12 +1,7 @@
 @if (planDetail; as detail) {
-<mat-card
-  appearance="outlined"
-  class="plan-detail-card"
-  (click)="onCardClick()"
->
+<mat-card appearance="outlined" class="mb-2" (click)="onCardClick()">
   <mat-card-header>
     <div class="flex w-full justify-between items-center">
-      <!-- Avatar + Título/Subtítulo -->
       <div class="flex items-center gap-3">
         <div mat-card-avatar class="example-header-image"></div>
         <div>
@@ -35,7 +30,7 @@
 
   <mat-card-content class="mt-4">
     @if (detail.leido && detail.fecha_completado) {
-    <div class="completed-info mb-4 p-3  rounded-lg">
+    <div class="completed-info mb-4 p-3 rounded-lg">
       <div class="text-sm font-medium text-green-800 mb-2">
         Información de lectura
       </div>
@@ -93,7 +88,7 @@
   <mat-card-actions class="">
     @if (showReadForm()) {
     <div class="px-2 w-full">
-      <h4 class="text-sm font-medium mb-3">Información de lectura</h4>
+      <h4 class="text-sm font-medium mb-6">Información de lectura</h4>
 
       <mat-form-field appearance="outline" class="w-full mb-3">
         <mat-label>Tiempo real (minutos)</mat-label>
@@ -117,6 +112,7 @@
             (input)="dificultad.set(+$any($event.target).value)"
           />
         </mat-slider>
+
         <div class="text-xs text-gray-600 mt-1">
           {{ getDifficultyText(dificultad()) }}
         </div>
@@ -132,7 +128,6 @@
         ></textarea>
       </mat-form-field>
 
-      <!-- Botones -->
       <div class="flex gap-2 justify-end">
         <button mat-stroked-button (click)="onCancelMarkAsRead()">
           Cancelar

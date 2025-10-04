@@ -1,12 +1,13 @@
-<app-plan-list
-  [plans]="plans()"
-  [isLoading]="isLoading()"
-  [error]="error()"
-  (planView)="onPlanView($event)"
-  (planEdit)="onPlanEdit($event)"
-  (planComplete)="onPlanComplete($event)"
-  (planDelete)="onPlanDelete($event)"
-  (refreshPlans)="onRefreshPlans()"
-/>
-<app-main-button/>
-
+<div class="mx-2">
+  <app-plan-list
+    [plans]="plans()"
+    [isLoading]="isLoading()"
+    [error]="error()"
+    (planView)="onPlanView($event)"
+    (planEdit)="onPlanEdit($event)"
+    (planComplete)="onPlanComplete($event)"
+    (planDelete)="onPlanDelete($event)"
+    (refreshPlans)="onRefreshPlans()"
+  />
+</div>
+<app-main-button (planCreated)="onPlanCreated($event)" />

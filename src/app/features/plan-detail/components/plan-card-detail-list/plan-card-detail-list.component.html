@@ -1,9 +1,13 @@
 <div class="plan-details-container">
   <!-- Estado de carga -->
   @if (isLoading()) {
-  <div class="loading-state">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p class="loading-text">Cargando detalles del plan...</p>
+  <div>
+    <div class="flex justify-center">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+    <p class="text-center text-shadow-2md font-medium">
+      Cargando detalles del plan...
+    </p>
   </div>
   }
 
@@ -22,26 +26,45 @@
   <!-- Detalles del plan -->
   @else if (hasPlanDetails()) {
   <div class="plan-content">
-    <!-- Información general del plan -->
     @if (planWithDetails(); as plan) {
-    <div class="plan-header">
-      <h2 class="plan-title">{{ plan.titulo }}</h2>
-      <div class="plan-info">
-        <span class="book-info"
-          >{{ plan.libro.titulo }} - {{ plan.libro.autor }}</span
-        >
-        <span class="progress-info"
-          >Progreso: {{ roundProgress(plan.progreso_porcentaje) }}%</span
-        >
-      </div>
-    </div>
+
+    <mat-card class="mb-4" appearance="raised">
+      <mat-card-header>
+        <mat-card-title>
+          {{ plan.libro.titulo }}
+        </mat-card-title>
+        <mat-card-subtitle>
+          <span class="text-sm font-normal text-gray-600">
+            {{ plan.libro.autor }}
+          </span>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="text-sm text-gray-600">
+          {{ plan.descripcion }}
+        </p>
+      </mat-card-content>
+      <mat-card-footer class="mx-4 mt-4">
+        <div class="flex justify-between items-center">
+          <mat-progress-bar
+            mode="determinate"
+            [value]="roundProgress(plan.progreso_porcentaje)"
+            class="progress-bar"
+          ></mat-progress-bar>
+          <span class="text-xl font-medium"
+            >&nbsp;{{ roundProgress(plan.progreso_porcentaje) }}%</span
+          >
+        </div>
+      </mat-card-footer>
+    </mat-card>
 
     <!-- Accordion de días -->
     <mat-accordion class="days-accordion" multi>
       @for (day of getPlanDays(); track day) {
-      <mat-expansion-panel class="day-panel">
-        <!-- Contenido del panel: lista de capítulos del día -->
-        <mat-expansion-panel-header class="day-panel-header">
+      <mat-expansion-panel
+
+      class="day-panel" >
+        <mat-expansion-panel-header class="!min-h-20">
           <mat-panel-title>
             <div class="flex justify-between items-center w-full">
               <div class="flex items-center">

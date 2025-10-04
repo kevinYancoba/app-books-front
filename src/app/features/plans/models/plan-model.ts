@@ -19,7 +19,7 @@ export interface Plan {
   titulo: string;
   updated_at: string | null;
   libro: BookInfo;
-  estadisticas?: PlanStatistics; // Opcional porque no siempre viene en todas las respuestas
+  estadisticas?: PlanStatistics;
 }
 
 export interface BookInfo {
@@ -55,7 +55,6 @@ export interface CreatePlanResponse {
   plan: Plan;
 }
 
-// Request para actualizar un plan
 export interface UpdatePlanRequest {
   titulo?: string;
   descripcion?: string;
@@ -65,7 +64,6 @@ export interface UpdatePlanRequest {
   tiempoEstimadoDia?: number;
 }
 
-// Interfaces para plan detallado con capítulos
 export interface PlanWithDetails extends Plan {
   detalleplanlectura: PlanDetail[];
 }
@@ -97,7 +95,6 @@ export interface Chapter {
   paginas_estimadas: number;
 }
 
-// Request para marcar capítulos como leídos
 export interface MarkChaptersReadRequest {
   detalleIds: number[];
   tiempoRealMinutos: number;
@@ -105,7 +102,6 @@ export interface MarkChaptersReadRequest {
   notas: string;
 }
 
-// Response al marcar capítulos como leídos
 export interface MarkChaptersReadResponse {
   statusCode: number;
   message: string;
@@ -127,5 +123,4 @@ export interface UpdatedDetail {
   notas?: string;
 }
 
-// Alias para compatibilidad con plan-detail
 export type PlanDetailed = Plan;

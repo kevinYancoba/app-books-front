@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,11 +19,23 @@ export class MainButtonComponent {
 
   readonly dialog = inject(MatDialog);
 
+  // Output para notificar cuando se crea un plan
+  planCreated = output<any>();
+
   openDialog() {
-    const dialogRef = this.dialog.open(PlanDialogComponent);
+    const dialogRef = this.dialog.open(PlanDialogComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      disableClose: false,
+      autoFocus: true
+    });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+      console.log(`Dialog result:`, result);
+      if (result) {
+        // Si se creó un plan, emitir el evento
+        this.planCreated.emit(result);
+      }
     });
   }
 }

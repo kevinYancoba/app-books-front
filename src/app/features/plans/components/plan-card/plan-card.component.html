@@ -22,14 +22,16 @@
           mat-icon-button
           (click)="onEdit(currentPlan)"
           color="primary"
-          matTooltip="Editar plan">
+          matTooltip="Editar plan"
+        >
           <mat-icon>edit</mat-icon>
         </button>
         <button
           mat-icon-button
           (click)="onDelete(currentPlan)"
           color="warn"
-          matTooltip="Eliminar plan">
+          matTooltip="Eliminar plan"
+        >
           <mat-icon>delete</mat-icon>
         </button>
       </div>
@@ -37,40 +39,31 @@
   </mat-card-header>
 
   <mat-card-content class="mt-4">
-    <!-- Estadísticas en grid -->
     @if (currentPlan.estadisticas) {
-    <div class="stats-grid">
-      <div class="flex justify-start">
-        <div class="">
-          Llevas {{ currentPlan.estadisticas.capitulosCompletados }}&nbsp;
-        </div>
-        <div class="stat-label">
-          de&nbsp;{{ currentPlan.estadisticas.totalCapitulos }}&nbsp;capítulos
-          leidos,
+    <div>
+      <div class="">
+        <div class="text-sm font-medium">
+          {{ currentPlan.estadisticas.capitulosCompletados }}&nbsp;de&nbsp;{{
+            currentPlan.estadisticas.totalCapitulos
+          }}&nbsp; titulos marcados.
         </div>
       </div>
-      <div class="flex justify-start">
-        <span>te quedan&nbsp;</span>
-        <div
-          class="stat-value"
-          [class.text-red-500]="isOverdue()"
-          [class.text-green-600]="!isOverdue()"
-        >
-          {{ daysRemaining() }}
-        </div>
-        <div class="stat-label">&nbsp;días para terminar de leer tu libro.</div>
+
+      <div
+        class="text-sm font-medium"
+        [class.text-red-500]="isOverdue()"
+        [class.text-green-600]="!isOverdue()"
+      >
+        <span>Dias pendientes:&nbsp;</span>
+        {{ daysRemaining() }}
       </div>
     </div>
     }
-
-    <!-- Fechas del plan -->
-    <div class="flex justify-start">
-      <div class="flex items-center mr-1">
-        <span>Inicio: {{ formatDate(currentPlan.fecha_inicio) }}</span>
-      </div>
-      <div class="flex items-center">
-        <span>Fin: {{ formatDate(currentPlan.fecha_fin) }}</span>
-      </div>
+    <div class="text-sm font-medium">
+      <span>Inicio: {{ formatDate(currentPlan.fecha_inicio) }}</span>
+    </div>
+    <div class="text-sm font-medium">
+      <span>Fin: {{ formatDate(currentPlan.fecha_fin) }}</span>
     </div>
   </mat-card-content>
 

@@ -26,19 +26,13 @@ import { Plan } from '../../models/plan-model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlanCardComponent {
-  /** Entrada: un solo plan */
   plan = input<Plan | null>(null);
-
-  /** Forzar vista compacta (lista) */
   compact = input<boolean>(false);
-
-  /** Salidas: eventos */
   viewPlan = output<Plan>();
   editPlan = output<Plan>();
   completePlan = output<Plan>();
   deletePlan = output<Plan>();
 
-  // Computed signals para datos derivados
   progressPercentage = computed(() => {
     const plan = this.plan();
     if (!plan?.estadisticas) return 0;
