@@ -8,11 +8,50 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlanService } from '../../services/plan.service';
 import { Plan, UpdatePlanRequest } from '../../models/plan-model';
+
+// Formato de fecha personalizado para dd/MM/yyyy
+export const DD_MM_YYYY_FORMAT = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
+// Adaptador personalizado para formato dd/MM/yyyy
+export class CustomDateAdapter extends NativeDateAdapter {
+  override parse(value: any): Date | null {
+    if (typeof value === 'string') {
+      const parts = value.split('/');
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+      }
+    }
+    return super.parse(value);
+  }
+
+  override format(date: Date, displayFormat: Object): string {
+    if (displayFormat === 'DD/MM/YYYY') {
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+    return super.format(date, displayFormat);
+  }
+}
 
 @Component({
   selector: 'app-edit-plan',
@@ -26,8 +65,12 @@ import { Plan, UpdatePlanRequest } from '../../models/plan-model';
     MatIconModule,
     MatSlideToggleModule,
     MatDatepickerModule,
-    MatNativeDateModule,
     MatProgressSpinnerModule
+  ],
+  providers: [
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: DD_MM_YYYY_FORMAT },
+    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
   ],
   templateUrl: './edit-plan.component.html',
 })
