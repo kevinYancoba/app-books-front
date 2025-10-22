@@ -1,0 +1,15 @@
+.home-plan-detail-container {
+  padding: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .home-plan-detail-container {
+    padding: 8px;
+  }
+
+  .header-section h1 {
+    font-size: 1.25rem;
+  }
+}

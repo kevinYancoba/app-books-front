@@ -35,7 +35,6 @@ import { PlanDetail } from '../../../plans/models/plan-model';
     MatSliderModule,
   ],
   templateUrl: './plan-card-detail.component.html',
-  styleUrl: './plan-card-detail.component.scss',
 })
 export class PlanCardDetailComponent {
   @Input({ required: true }) planDetail!: PlanDetail;

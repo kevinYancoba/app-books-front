@@ -2,7 +2,6 @@
   <!-- Header -->
   <div class="dialog-header">
     <h2 mat-dialog-title class="text-2xl font-bold flex items-center gap-2">
-      <mat-icon class="text-primary">edit</mat-icon>
       Editar Plan de Lectura
     </h2>
   </div>
@@ -30,7 +29,6 @@
           placeholder="Ej: Mi plan de lectura de verano"
           maxlength="100"
         />
-        <mat-icon matSuffix>title</mat-icon>
         <mat-hint align="end"
           >{{ editPlanForm.get("titulo")?.value?.length || 0 }}/100</mat-hint
         >
@@ -42,7 +40,7 @@
 
       <!-- Descripción -->
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Descripción (Opcional)</mat-label>
+        <mat-label>Descripción</mat-label>
         <textarea
           matInput
           formControlName="descripcion"
@@ -51,7 +49,6 @@
           maxlength="500"
         >
         </textarea>
-        <mat-icon matSuffix>description</mat-icon>
         <mat-hint align="end"
           >{{
             editPlanForm.get("descripcion")?.value?.length || 0
@@ -63,41 +60,20 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Fecha de Finalización</mat-label>
-        <input
-          matInput
-          [matDatepicker]="picker"
-          formControlName="fechaFin"
-          [min]="minDate"
-          placeholder="Selecciona una fecha"
-        />
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-        @if (editPlanForm.get('fechaFin')?.invalid &&
-        editPlanForm.get('fechaFin')?.touched) {
-        <mat-error>{{ getErrorMessage("fechaFin") }}</mat-error>
-        }
-      </mat-form-field>
-
       <!-- Grid de configuraciones -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Páginas por día -->
+        <!-- Nivel de Lectura -->
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Páginas por Día</mat-label>
-          <input
-            matInput
-            type="number"
-            formControlName="paginasPorDia"
-            placeholder="Ej: 10"
-            min="1"
-            max="500"
-          />
-          <mat-icon matSuffix>auto_stories</mat-icon>
-          <mat-hint>Páginas a leer diariamente</mat-hint>
-          @if (editPlanForm.get('paginasPorDia')?.invalid &&
-          editPlanForm.get('paginasPorDia')?.touched) {
-          <mat-error>{{ getErrorMessage("paginasPorDia") }}</mat-error>
+          <mat-label>Nivel de Lectura</mat-label>
+          <mat-select formControlName="nivelLectura">
+            <mat-option value="novato">Novato</mat-option>
+            <mat-option value="intermedio">Intermedio</mat-option>
+            <mat-option value="profesional">Profesional</mat-option>
+            <mat-option value="experto">Experto</mat-option>
+          </mat-select>
+          @if (editPlanForm.get('nivelLectura')?.invalid &&
+          editPlanForm.get('nivelLectura')?.touched) {
+          <mat-error>{{ getErrorMessage("nivelLectura") }}</mat-error>
           }
         </mat-form-field>
 
@@ -112,13 +88,30 @@
             min="1"
             max="1440"
           />
-          <mat-hint>Minutos de lectura diaria</mat-hint>
           @if (editPlanForm.get('tiempoEstimadoDia')?.invalid &&
           editPlanForm.get('tiempoEstimadoDia')?.touched) {
           <mat-error>{{ getErrorMessage("tiempoEstimadoDia") }}</mat-error>
           }
         </mat-form-field>
       </div>
+
+      <!-- Hora Preferida -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Hora Preferida</mat-label>
+        <input
+          matInput
+          [matTimepicker]="timepicker"
+          formControlName="horaPreferida"
+          placeholder="20:00:00"
+        />
+        <mat-timepicker-toggle matSuffix [for]="timepicker"></mat-timepicker-toggle>
+        <mat-timepicker #timepicker></mat-timepicker>
+        <mat-hint>Hora preferida para leer</mat-hint>
+        @if (editPlanForm.get('horaPreferida')?.invalid &&
+        editPlanForm.get('horaPreferida')?.touched) {
+        <mat-error>{{ getErrorMessage("horaPreferida") }}</mat-error>
+        }
+      </mat-form-field>
 
       <!-- Incluir fines de semana -->
       <div class="toggle-section mt-4">
@@ -136,8 +129,8 @@
           <div class="text-xs">
             <p class="font-semibold mb-1">Nota importante:</p>
             <p>
-              Los cambios en las páginas por día y tiempo estimado afectarán la
-              planificación futura del plan de lectura.
+              Los cambios en el nivel de lectura, tiempo estimado o fines de semana
+              regenerarán automáticamente los detalles del plan de lectura.
             </p>
           </div>
         </div>

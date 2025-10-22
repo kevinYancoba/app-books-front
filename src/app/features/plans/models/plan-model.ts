@@ -56,12 +56,13 @@ export interface CreatePlanResponse {
 }
 
 export interface UpdatePlanRequest {
-  titulo?: string;
-  descripcion?: string;
-  fechaFin?: string;
-  incluirFinesSemana?: boolean;
-  paginasPorDia?: number;
-  tiempoEstimadoDia?: number;
+  titulo: string;
+  descripcion: string;
+  incluirFinesSemana: boolean;
+  nivelLectura: string;
+  tiempoEstimadoDia: number;
+  horaPreferida: string;
+  regenerarDetalles: boolean;
 }
 
 export interface PlanWithDetails extends Plan {

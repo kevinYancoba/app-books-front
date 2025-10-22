@@ -1,20 +1,21 @@
 @if (plan(); as currentPlan) {
 <mat-card appearance="outlined" class="">
-  <!-- Header con información del libro -->
   <img
-    mat-card-image
-    src="https://material.angular.io/assets/img/examples/shiba2.jpg"
-    alt="Photo of a Shiba Inu"
-    class="h-48 w-full object-cover"
-  />
+        mat-card-image
+        src="https://hips.hearstapps.com/hmg-prod/images/old-books-in-a-library-big-file-royalty-free-image-1666591048.jpg"
+        alt="Photo of a Shiba Inu"
+        class="h-48 w-full object-cover"
+      />
   <mat-card-header>
     <div class="flex w-full justify-between items-center">
       <div>
         <mat-card-title class="">
-          {{ currentPlan.libro.titulo }}
+          <span class="">
+            {{ currentPlan.libro.titulo }}
+          </span>
         </mat-card-title>
-        <mat-card-subtitle class="plan-subtitle">
-          por {{ currentPlan.libro.autor }}
+        <mat-card-subtitle>
+          <span class="text-sm font-normal"> por {{ currentPlan.libro.autor }} </span>
         </mat-card-subtitle>
       </div>
       <div class="flex gap-1">
@@ -38,11 +39,11 @@
     </div>
   </mat-card-header>
 
-  <mat-card-content class="mt-4">
+  <mat-card-content class="mt-8">
     @if (currentPlan.estadisticas) {
     <div>
       <div class="">
-        <div class="text-sm font-medium">
+        <div class="text-sm font-normal ">
           {{ currentPlan.estadisticas.capitulosCompletados }}&nbsp;de&nbsp;{{
             currentPlan.estadisticas.totalCapitulos
           }}&nbsp; titulos marcados.
@@ -59,15 +60,15 @@
       </div>
     </div>
     }
-    <div class="text-sm font-medium">
+    <div class="text-sm font-normal ">
       <span>Inicio: {{ formatDate(currentPlan.fecha_inicio) }}</span>
     </div>
-    <div class="text-sm font-medium">
+    <div class="text-sm font-normal ">
       <span>Fin: {{ formatDate(currentPlan.fecha_fin) }}</span>
     </div>
   </mat-card-content>
 
-  <mat-card-footer class="mt-4 px-4">
+  <mat-card-footer class="mt-8 px-4">
     <mat-chip-set>
       <mat-chip [color]="getStateColor(currentPlan.estado)">
         {{ currentPlan.estado }}
@@ -92,9 +93,9 @@
 
     <div class="my-4">
       <div class="flex justify-between">
-        <span class="progress-text">{{ progressPercentage() }}%</span>
+        <span class="text-sm font-normal text-gray-600">{{ progressPercentage() }}%</span>
         @if (currentPlan.estadisticas) {
-        <span class="pages-info">
+        <span class="text-sm font-normal text-gray-600">
           {{ currentPlan.estadisticas.paginasLeidas }} /
           {{ currentPlan.estadisticas.totalPaginas }} pg
         </span>
@@ -117,9 +118,8 @@
       mat-stroked-button
       (click)="onComplete(currentPlan)"
       color="accent"
-      class="m-2"
+      class="m-1"
     >
-      <mat-icon>check_circle</mat-icon>
       Completar
     </button>
     }
@@ -127,9 +127,8 @@
       mat-flat-button
       (click)="onView(currentPlan)"
       color="primary"
-      class="m-2"
+      class="m-1"
     >
-      <mat-icon>visibility</mat-icon>
       Ver Plan
     </button>
   </mat-card-actions>

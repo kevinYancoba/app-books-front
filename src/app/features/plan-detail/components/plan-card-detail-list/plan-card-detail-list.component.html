@@ -29,6 +29,12 @@
     @if (planWithDetails(); as plan) {
 
     <mat-card class="mb-4" appearance="raised">
+      <img
+        mat-card-image
+        src="https://hips.hearstapps.com/hmg-prod/images/old-books-in-a-library-big-file-royalty-free-image-1666591048.jpg"
+        alt="Photo of a Shiba Inu"
+        class="h-48 w-full object-cover"
+      />
       <mat-card-header>
         <mat-card-title>
           {{ plan.libro.titulo }}
@@ -62,10 +68,11 @@
     <mat-accordion class="days-accordion">
       @for (day of getPlanDays(); track day) {
       <mat-expansion-panel
-      [expanded]="isDayExpanded(day)"
-      (opened)="togglePanel(day, true)"
-      (closed)="togglePanel(day, false)"
-      class="day-panel" >
+        [expanded]="isDayExpanded(day)"
+        (opened)="togglePanel(day, true)"
+        (closed)="togglePanel(day, false)"
+        class="day-panel"
+      >
         <mat-expansion-panel-header class="!min-h-20">
           <mat-panel-title>
             <div class="flex justify-between items-center w-full">

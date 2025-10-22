@@ -7,51 +7,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTimepickerModule } from '@angular/material/timepicker';
 import { PlanService } from '../../services/plan.service';
 import { Plan, UpdatePlanRequest } from '../../models/plan-model';
 
-// Formato de fecha personalizado para dd/MM/yyyy
-export const DD_MM_YYYY_FORMAT = {
-  parse: {
-    dateInput: 'DD/MM/YYYY',
-  },
-  display: {
-    dateInput: 'DD/MM/YYYY',
-    monthYearLabel: 'MMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY',
-  },
-};
 
-// Adaptador personalizado para formato dd/MM/yyyy
-export class CustomDateAdapter extends NativeDateAdapter {
-  override parse(value: any): Date | null {
-    if (typeof value === 'string') {
-      const parts = value.split('/');
-      if (parts.length === 3) {
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const year = parseInt(parts[2], 10);
-        return new Date(year, month, day);
-      }
-    }
-    return super.parse(value);
-  }
-
-  override format(date: Date, displayFormat: Object): string {
-    if (displayFormat === 'DD/MM/YYYY') {
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
-    }
-    return super.format(date, displayFormat);
-  }
-}
 
 @Component({
   selector: 'app-edit-plan',
@@ -64,13 +27,9 @@ export class CustomDateAdapter extends NativeDateAdapter {
     MatButtonModule,
     MatIconModule,
     MatSlideToggleModule,
-    MatDatepickerModule,
-    MatProgressSpinnerModule
-  ],
-  providers: [
-    { provide: DateAdapter, useClass: CustomDateAdapter },
-    { provide: MAT_DATE_FORMATS, useValue: DD_MM_YYYY_FORMAT },
-    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatTimepickerModule
   ],
   templateUrl: './edit-plan.component.html',
 })
@@ -86,14 +45,50 @@ export class EditPlanComponent implements OnInit {
   isLoading = signal<boolean>(false);
   plan = signal<Plan>(this.data.plan);
 
+  // Opciones para nivel de lectura
+  readonly nivelesLectura = ['novato', 'intermedio', 'profesional', 'experto'];
+
+  // Perfiles de lectura con tiempos recomendados
+  private readonly readingProfiles = {
+    novato: {
+      min: 15,
+      optimal: 20,
+      max: 30,
+      minPerPage: 3,
+      maxPerPage: 6
+    },
+    intermedio: {
+      min: 20,
+      optimal: 30,
+      max: 45,
+      minPerPage: 2,
+      maxPerPage: 4.5
+    },
+    profesional: {
+      min: 25,
+      optimal: 35,
+      max: 60,
+      minPerPage: 1.5,
+      maxPerPage: 4
+    },
+    experto: {
+      min: 20,
+      optimal: 30,
+      max: 45,
+      minPerPage: 1,
+      maxPerPage: 2.25
+    }
+  };
+
   // Formulario reactivo
   editPlanForm!: FormGroup;
 
-  // Fecha mínima (hoy)
-  minDate = new Date();
+  // Valores iniciales para detectar cambios
+  private initialValues: any;
 
   ngOnInit(): void {
     this.initializeForm();
+    this.setupChangeDetection();
   }
 
   /**
@@ -104,12 +99,66 @@ export class EditPlanComponent implements OnInit {
 
     this.editPlanForm = this.fb.group({
       titulo: [currentPlan.titulo, [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      descripcion: [currentPlan.descripcion || '', [Validators.maxLength(500)]],
-      fechaFin: [new Date(currentPlan.fecha_fin), [Validators.required]],
-      incluirFinesSemana: [currentPlan.incluir_fines_semana],
-      paginasPorDia: [currentPlan.paginas_por_dia, [Validators.min(1), Validators.max(500)]],
-      tiempoEstimadoDia: [currentPlan.tiempo_estimado_dia, [Validators.min(1), Validators.max(1440)]]
+      descripcion: [currentPlan.descripcion || '', [Validators.required, Validators.maxLength(500)]],
+      incluirFinesSemana: [currentPlan.incluir_fines_semana, [Validators.required]],
+      nivelLectura: ['intermedio', [Validators.required]],
+      tiempoEstimadoDia: [currentPlan.tiempo_estimado_dia, [Validators.required, Validators.min(1), Validators.max(1440)]],
+      horaPreferida: ['20:00:00', [Validators.required]],
+      regenerarDetalles: [false]
     });
+
+    // Guardar valores iniciales
+    this.initialValues = {
+      nivelLectura: this.editPlanForm.get('nivelLectura')?.value,
+      tiempoEstimadoDia: this.editPlanForm.get('tiempoEstimadoDia')?.value,
+      incluirFinesSemana: this.editPlanForm.get('incluirFinesSemana')?.value
+    };
+  }
+
+  /**
+   * Configura la detección de cambios para regenerarDetalles y tiempo estimado
+   */
+  private setupChangeDetection(): void {
+    const nivelLecturaControl = this.editPlanForm.get('nivelLectura');
+    const tiempoEstimadoDiaControl = this.editPlanForm.get('tiempoEstimadoDia');
+    const incluirFinesSemanaControl = this.editPlanForm.get('incluirFinesSemana');
+    const regenerarDetallesControl = this.editPlanForm.get('regenerarDetalles');
+
+    // Escuchar cambios en nivel de lectura para actualizar tiempo estimado
+    nivelLecturaControl?.valueChanges.subscribe((nivel) => {
+      this.updateTiempoEstimadoByNivel(nivel, tiempoEstimadoDiaControl);
+      this.updateRegenerarDetalles(regenerarDetallesControl);
+    });
+
+    tiempoEstimadoDiaControl?.valueChanges.subscribe(() => {
+      this.updateRegenerarDetalles(regenerarDetallesControl);
+    });
+
+    incluirFinesSemanaControl?.valueChanges.subscribe(() => {
+      this.updateRegenerarDetalles(regenerarDetallesControl);
+    });
+  }
+
+  /**
+   * Actualiza el tiempo estimado basado en el nivel de lectura seleccionado
+   */
+  private updateTiempoEstimadoByNivel(nivel: string, tiempoControl: any): void {
+    const profile = this.readingProfiles[nivel as keyof typeof this.readingProfiles];
+    if (profile) {
+      tiempoControl?.setValue(profile.optimal, { emitEvent: false });
+    }
+  }
+
+  /**
+   * Actualiza el valor de regenerarDetalles basado en cambios detectados
+   */
+  private updateRegenerarDetalles(regenerarDetallesControl: any): void {
+    const nivelLecturaChanged = this.editPlanForm.get('nivelLectura')?.value !== this.initialValues.nivelLectura;
+    const tiempoEstimadoDiaChanged = this.editPlanForm.get('tiempoEstimadoDia')?.value !== this.initialValues.tiempoEstimadoDia;
+    const incluirFinesSemanaChanged = this.editPlanForm.get('incluirFinesSemana')?.value !== this.initialValues.incluirFinesSemana;
+
+    const shouldRegenerate = nivelLecturaChanged || tiempoEstimadoDiaChanged || incluirFinesSemanaChanged;
+    regenerarDetallesControl?.setValue(shouldRegenerate, { emitEvent: false });
   }
 
   /**
@@ -129,31 +178,16 @@ export class EditPlanComponent implements OnInit {
 
     const formValue = this.editPlanForm.value;
 
-    // Construir el request solo con los campos que tienen valor
-    const updateRequest: UpdatePlanRequest = {};
-
-    if (formValue.titulo) {
-      updateRequest.titulo = formValue.titulo;
-    }
-
-    if (formValue.descripcion) {
-      updateRequest.descripcion = formValue.descripcion;
-    }
-
-    if (formValue.fechaFin) {
-      updateRequest.fechaFin = this.formatDateForBackend(formValue.fechaFin);
-    }
-
-    // Boolean siempre se envía
-    updateRequest.incluirFinesSemana = formValue.incluirFinesSemana;
-
-    if (formValue.paginasPorDia) {
-      updateRequest.paginasPorDia = formValue.paginasPorDia;
-    }
-
-    if (formValue.tiempoEstimadoDia) {
-      updateRequest.tiempoEstimadoDia = formValue.tiempoEstimadoDia;
-    }
+    // Construir el request con la nueva estructura
+    const updateRequest: UpdatePlanRequest = {
+      titulo: formValue.titulo,
+      descripcion: formValue.descripcion,
+      incluirFinesSemana: formValue.incluirFinesSemana,
+      nivelLectura: formValue.nivelLectura,
+      tiempoEstimadoDia: formValue.tiempoEstimadoDia,
+      horaPreferida: formValue.horaPreferida,
+      regenerarDetalles: formValue.regenerarDetalles
+    };
 
     console.log('Enviando actualización de plan:', updateRequest);
 
@@ -176,16 +210,6 @@ export class EditPlanComponent implements OnInit {
         });
       }
     });
-  }
-
-  /**
-   * Formatea la fecha para el backend
-   */
-  private formatDateForBackend(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}T23:59:59Z`;
   }
 
   /**
