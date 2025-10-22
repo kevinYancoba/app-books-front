@@ -27,6 +27,7 @@ import {
 } from '../../../plans/models/plan-model';
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressBar } from "@angular/material/progress-bar";
+import { PlanStatisticsCardComponent } from '../../../Progress/components/plan-statistics-card/plan-statistics-card.component';
 
 @Component({
   selector: 'app-plan-card-detail-list',
@@ -40,7 +41,8 @@ import { MatProgressBar } from "@angular/material/progress-bar";
     MatBadgeModule,
     MatChipsModule,
     MatCardModule,
-    MatProgressBar
+    MatProgressBar,
+    PlanStatisticsCardComponent
 ],
   templateUrl: './plan-card-detail-list.component.html',
 })

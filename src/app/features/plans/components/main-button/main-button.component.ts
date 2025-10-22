@@ -8,9 +8,10 @@ import { PlanDialogComponent } from '../../../plan-dialog/components/plan-dialog
   selector: 'app-main-button',
   imports: [MatIconModule, MatButtonModule],
   template: `
-     <div class="fixed bottom-4 right-4 z-50 mb-20">
-      <button mat-fab type="button" (click)="openDialog()">
+     <div class="fixed bottom-4 right-4 z-50 mb-2">
+      <button mat-fab extended type="button" (click)="openDialog()">
         <mat-icon>add</mat-icon>
+        Nuevo plan
       </button>
     </div>
   `,

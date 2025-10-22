@@ -1,0 +1,81 @@
+@if (statistics) {
+<mat-card
+  class="statistics-card bg-slate-900 border border-slate-700 rounded-lg"
+>
+  <mat-card-header class="mb-8">
+    <mat-card-title> {{ statistics.porcentajeCompletado }}% </mat-card-title>
+    <mat-card-subtitle>
+      <span class="text-sm">Progreso general</span>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content class="p-6">
+    <!-- Header con porcentaje general -->
+
+    <!-- Capítulos -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-medium">Capítulos</span>
+        <span class="text-sm"
+          >{{ statistics.capitulosCompletados }}/{{
+            statistics.totalCapitulos
+          }}</span
+        >
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="getChaptersPercentage()"
+        [color]="getProgressColor(getChaptersPercentage())"
+        class="h-2 rounded"
+      ></mat-progress-bar>
+      <div class="text-xs mt-1">{{ getChaptersPercentage() }}%</div>
+    </div>
+
+    <!-- Páginas -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-medium">Páginas</span>
+        <span class="text-sm"
+          >{{ statistics.paginasLeidas }}/{{ statistics.totalPaginas }}</span
+        >
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="getPagesPercentage()"
+        [color]="getProgressColor(getPagesPercentage())"
+        class="!min-h-6rounded-lg"
+      ></mat-progress-bar>
+      <div class="text-xs mt-1">{{ getPagesPercentage() }}%</div>
+    </div>
+
+    <!-- Días -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-medium">Días</span>
+        <span class="text-sm"
+          >{{ statistics.diasCompletados }}/{{ statistics.diasTotales }}</span
+        >
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="getDaysPercentage()"
+        [color]="getProgressColor(getDaysPercentage())"
+        class="h-2 rounded"
+      ></mat-progress-bar>
+      <div class="text-xs mt-1">{{ getDaysPercentage() }}%</div>
+    </div>
+
+    <!-- Información de tiempo -->
+    <div class="grid grid-cols-2 gap-4 pt-4">
+      <div class="text-center">
+        <div class="text-2xl font-bold">{{ statistics.diasTranscurridos }}</div>
+        <div class="text-xs mt-1">Días transcurridos</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold">{{ statistics.diasRestantes }}</div>
+        <div class="text-xs mt-1">Días restantes</div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+}

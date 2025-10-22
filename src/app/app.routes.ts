@@ -4,6 +4,7 @@ import { LoginLayoutComponent } from './core/layout/login-layout/login-layout.co
 import { HomeLayoutComponent } from './core/layout/home-layout/home-layout.component';
 import planRoutes from './features/plans/plans.routes';
 import planDetailRoutes from './features/plan-detail/plan-detail.routes';
+import progressRoutes from './features/Progress/progress.routes';
 import { authGuard, noAuthGuard } from './core/guards';
 
 export const routes: Routes = [

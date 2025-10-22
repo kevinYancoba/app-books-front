@@ -50,19 +50,12 @@
           {{ plan.descripcion }}
         </p>
       </mat-card-content>
-      <mat-card-footer class="mx-4 mt-4 mb-4">
-        <div class="flex justify-between items-center">
-          <mat-progress-bar
-            mode="determinate"
-            [value]="roundProgress(plan.progreso_porcentaje)"
-            class="progress-bar"
-          ></mat-progress-bar>
-          <span class="text-xl font-medium"
-            >&nbsp;{{ roundProgress(plan.progreso_porcentaje) }}%</span
-          >
-        </div>
-      </mat-card-footer>
     </mat-card>
+
+    <!-- Tarjeta de estadísticas -->
+    <div class="mb-4">
+      <app-plan-statistics-card [statistics]="plan.estadisticas"></app-plan-statistics-card>
+    </div>
 
     <!-- Accordion de días -->
     <mat-accordion class="days-accordion">

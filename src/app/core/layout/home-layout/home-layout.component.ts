@@ -5,7 +5,7 @@ import { ToolbarUpComponent } from "../../components/toolbar-up/toolbar-up.compo
 
 @Component({
   selector: 'app-home-layout',
-  imports: [RouterModule, MainToolbarComponent, ToolbarUpComponent],
+  imports: [RouterModule, ToolbarUpComponent],
   templateUrl: './home-layout.component.html',
 })
 export class HomeLayoutComponent {

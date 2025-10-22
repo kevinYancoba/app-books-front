@@ -42,22 +42,13 @@
     >
       <mat-expansion-panel-header class="!min-h-20">
         <mat-panel-title>
-          <!-- <span class="progress-percentage"
-            >{{ getPlanProgress(plan) }}%&nbsp;</span
-          > -->
-          <mat-progress-bar
-            mode="determinate"
-            [value]="getPlanProgress(plan)"
-            [color]="getProgressColor(plan)"
-            class="progress-bar"
-          ></mat-progress-bar>
-        </mat-panel-title>
-        <mat-panel-description class="panel-description">
-          <div class="flex justify-between w-full">
+           <div class="flex justify-between w-full">
             <span class="book-title">{{ plan.libro.titulo }}</span>
             <mat-icon class="plan-icon">{{ getPlanIcon(plan) }}</mat-icon>
           </div>
-        </mat-panel-description>
+
+        </mat-panel-title>
+
       </mat-expansion-panel-header>
 
       <app-plan-card

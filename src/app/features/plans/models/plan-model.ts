@@ -33,8 +33,11 @@ export interface PlanStatistics {
   capitulosCompletados: number;
   totalPaginas: number;
   paginasLeidas: number;
+  diasTotales: number;
+  diasCompletados: number;
   diasTranscurridos: number;
   diasRestantes: number;
+  porcentajeCompletado: number;
 }
 
 export interface CreatePlanRequest {
