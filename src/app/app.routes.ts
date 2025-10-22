@@ -26,6 +26,10 @@ export const routes: Routes = [
       {
         path: 'plan-detail',
         children: planDetailRoutes
+      },
+      {
+        path: 'progress',
+        children: progressRoutes
       }
     ]
   },

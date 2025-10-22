@@ -41,7 +41,6 @@ import { PlanStatisticsCardComponent } from '../../../Progress/components/plan-s
     MatBadgeModule,
     MatChipsModule,
     MatCardModule,
-    MatProgressBar,
     PlanStatisticsCardComponent
 ],
   templateUrl: './plan-card-detail-list.component.html',

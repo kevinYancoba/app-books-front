@@ -1,0 +1,159 @@
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Card 1: Resumen y Estadísticas de Progreso -->
+  <mat-card class="report-card">
+    <mat-card-header class="pb-4  border-gray-200">
+      <mat-card-title class="text-lg font-bold">Progreso General</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="pt-6">
+      <!-- Resumen de Libros -->
+      @if (resumenLibros) {
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold text-gray-500 mb-4 mt-2">Resumen de Libros</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <mat-card appearance="outlined" class="stat-box">
+            <div class="stat-value text-2xl font-bold ">
+              {{ resumenLibros.librosEnProgreso }}
+            </div>
+            <div class="stat-label text-xs ">En Progreso</div>
+          </mat-card>
+          <mat-card appearance="outlined" class="stat-box">
+            <div class="stat-value text-2xl font-bold ">
+              {{ resumenLibros.librosCompletados }}
+            </div>
+            <div class="stat-label text-xs ">Completados</div>
+          </mat-card>
+          <mat-card appearance="outlined" class="stat-box">
+            <div class="stat-value text-2xl font-bold ">
+              {{ resumenLibros.planesActivos }}
+            </div>
+            <div class="stat-label text-xs ">Planes Activos</div>
+          </mat-card>
+          <mat-card appearance="outlined" class="stat-box">
+            <div class="stat-value text-2xl font-bold ">
+              {{ resumenLibros.planesCompletados }}
+            </div>
+            <div class="stat-label text-xs ">Planes Completados</div>
+          </mat-card>
+        </div>
+      </div>
+      }
+
+      <!-- Estadísticas de Progreso -->
+      @if (estadisticasProgreso) {
+      <div>
+        <h3 class="text-sm font-semibold text-gray-500 mb-4">Estadísticas de Lectura</h3>
+        <div class="space-y-4">
+          <!-- Capítulos -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm ">Capítulos Leídos</span>
+              <span class="text-sm font-semibold">
+                {{ estadisticasProgreso.capitulosLeidos }}/{{ estadisticasProgreso.totalCapitulos }}
+              </span>
+            </div>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="estadisticasProgreso.porcentajeProgreso"
+              color="primary"
+              class="h-2"
+            ></mat-progress-bar>
+            <div class="text-xs  mt-1">
+              {{ estadisticasProgreso.porcentajeProgreso | number: '1.1-1' }}%
+            </div>
+          </div>
+
+          <!-- Páginas Leídas -->
+          <div class="pt-2">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm ">Páginas Leídas</span>
+              <span class="text-sm font-semibold">{{ estadisticasProgreso.paginasLeidas }}</span>
+            </div>
+            <div class="text-xs text-gray-500">
+              Tiempo invertido: {{ estadisticasProgreso.tiempoTotalInvertido }} minutos
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Card 2: Análisis de Cumplimiento -->
+  <mat-card class="report-card">
+    <mat-card-header class="pb-4 ">
+      <mat-card-title class="text-lg font-bold">Análisis de Cumplimiento</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="pt-6">
+      @if (analisisCumplimiento) {
+      <div class="space-y-6">
+        <!-- Porcentaje de Cumplimiento -->
+        <div>
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-sm font-semibold text-gray-500">Cumplimiento General</span>
+            <span class="text-2xl font-bold ">
+              {{ analisisCumplimiento.porcentajeCumplimiento | number: '1.1-1' }}%
+            </span>
+          </div>
+          <mat-progress-bar
+            mode="determinate"
+            [value]="analisisCumplimiento.porcentajeCumplimiento"
+            color="accent"
+            class="h-3"
+          ></mat-progress-bar>
+        </div>
+
+        <!-- Tendencia -->
+        <mat-card appearance="outlined" class="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+          <mat-icon [ngClass]="getTendenciaColor()">
+            {{ getTendenciaIcon() }}
+          </mat-icon>
+          <div>
+            <div class="text-xs text-gray-500">Tendencia</div>
+            <div class="text-sm font-semibold" [ngClass]="getTendenciaColor()">
+              {{ analisisCumplimiento.tendencia }}
+            </div>
+          </div>
+        </mat-card>
+
+        <!-- Detalles de Días -->
+        <div class="grid grid-cols-2 gap-3">
+          <mat-card appearance="outlined" class="detail-box bg-green-50 border border-green-200">
+            <div class="text-xs  font-semibold">Completados</div>
+            <div class="text-xl font-bold ">
+              {{ analisisCumplimiento.diasCompletados }}
+            </div>
+            <div class="text-xs 0">de {{ analisisCumplimiento.diasPlanificados }}</div>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="detail-box ">
+            <div class="text-xs  font-semibold">Atrasados</div>
+            <div class="text-xl font-bold ">
+              {{ analisisCumplimiento.diasAtrasados }}
+            </div>
+            <div class="text-xs ">días</div>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="detail-box bg-blue-50 border border-blue-200">
+            <div class="text-xs  font-semibold">Adelantados</div>
+            <div class="text-xl font-bold ">
+              {{ analisisCumplimiento.diasAdelantados }}
+            </div>
+            <div class="text-xs ">días</div>
+          </mat-card>
+
+          <mat-card appearance="outlined" class="detail-box bg-purple-50 border border-purple-200">
+            <div class="text-xs  font-semibold">Planificados</div>
+            <div class="text-xl font-bold ">
+              {{ analisisCumplimiento.diasPlanificados }}
+            </div>
+            <div class="text-xs ">total</div>
+          </mat-card>
+        </div>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
+

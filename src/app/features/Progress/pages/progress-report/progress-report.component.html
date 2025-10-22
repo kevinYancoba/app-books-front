@@ -1,0 +1,41 @@
+<div class="progress-report-container">
+  <!-- Header -->
+  <div class="mb-6 flex justify-between items-center">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-2xl font-bold">Reporte de Progreso</h1>
+    <div class="w-10"></div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="flex justify-center items-center py-12">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+  <div class="error-container p-6 rounded-lg bg-red-50 border border-red-200">
+    <mat-icon class="text-red-600 text-4xl mb-2">error_outline</mat-icon>
+    <h3 class="text-lg font-semibold text-red-800 mb-2">Error al cargar el reporte</h3>
+    <p class="text-red-700 mb-4">{{ error() }}</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      Volver
+    </button>
+  </div>
+  }
+
+  <!-- Content -->
+  @else if (report();) {
+  <div class="report-content">
+    <app-progress-report-card
+      [resumenLibros]="report()?.resumenLibros"
+      [estadisticasProgreso]="report()?.estadisticasProgreso"
+      [analisisCumplimiento]="report()?.analisisCumplimiento"
+    ></app-progress-report-card>
+  </div>
+  }
+</div>
+
