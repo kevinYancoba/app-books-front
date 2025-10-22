@@ -112,7 +112,6 @@ export class PlanStepperComponent {
       30,
       [Validators.required, Validators.min(1), Validators.max(480)],
     ],
-    fechaFin: ['', Validators.required],
     finesSemana: [true],
   });
 
@@ -252,7 +251,6 @@ export class PlanStepperComponent {
       horaioLectura: this.formatTimeForBackend(
         firstFormData.horarioLectura as any
       ),
-      fechaFin: this.formatDateForBackend(firstFormData.fechaFin as any),
       finesSemana: firstFormData.finesSemana!,
       tituloLibro: secondFormData.tituloLibro!,
       autorLibro: secondFormData.autorLibro!,
@@ -333,7 +331,6 @@ export class PlanStepperComponent {
       nivelLectura: '',
       horarioLectura: '',
       tiempoLecturaDiario: 30,
-      fechaFin: '',
       finesSemana: true,
     });
 

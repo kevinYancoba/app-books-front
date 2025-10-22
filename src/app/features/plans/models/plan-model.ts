@@ -45,7 +45,6 @@ export interface CreatePlanRequest {
   nivelLectura: string;
   tiempoLecturaDiario: number;
   horaioLectura: string;
-  fechaFin: string;
   finesSemana: boolean;
   tituloLibro: string;
   autorLibro: string;

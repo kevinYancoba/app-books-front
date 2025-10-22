@@ -35,17 +35,6 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Fecha fin del plan</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="fechaFin" />
-        <mat-hint>Selecciona cuando quieres terminar de leer</mat-hint>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-        @if (firstFormGroup.get('fechaFin')?.invalid && firstFormGroup.get('fechaFin')?.touched) {
-        <mat-error>Selecciona la fecha fin del plan</mat-error>
-        }
-      </mat-form-field>
-
       <div class="w-full mb-4 mt-6">
         <mat-checkbox formControlName="finesSemana">
           Incluir fines de semana en el plan de lectura
