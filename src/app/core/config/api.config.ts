@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  baseUrl: 'https://app-book-back-production.up.railway.app/api',
+  baseUrl: 'https://track-book-bk.up.railway.app/api',
   endpoints: {
     auth: {
       login: '/auth/login',
